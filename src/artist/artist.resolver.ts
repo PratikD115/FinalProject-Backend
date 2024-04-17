@@ -27,12 +27,11 @@ export class ArtistResolver {
   async getArtistById(@Args('id') id: string) {
     return await this.artistService.getArtistById(id);
   }
-  
+
   @Query(() => [ArtistType])
   async getAllActiveArtist() {
     return await this.artistService.getAllActiveArtist();
-    }
-  
+  }
 
   @Mutation(() => ArtistType)
   async createArtist(
@@ -40,19 +39,13 @@ export class ArtistResolver {
     @Args('image', { type: () => GraphQLUpload }) image: FileUpload,
   ) {
     let artist;
-    try{
+    try {
       const artistImage = await this.cloudinaryService.uploadImage(
         image,
         'artist-image',
       );
-       artist = this.artistService.createArtist(
-        createArtistDto,
-        artistImage,
-      );
-    }
-    catch (err) {
-      
-    }
+      artist = this.artistService.createArtist(createArtistDto, artistImage);
+    } catch (err) {}
     return artist;
   }
 
@@ -74,4 +67,5 @@ export class ArtistResolver {
   async songs(@Parent() artist: Artist) {
     return this.songService.findSongByArtistId(artist.id);
   }
+
 }

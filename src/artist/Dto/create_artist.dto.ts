@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Genres } from 'src/song/song-genre.enum';
 
 @InputType()
@@ -8,6 +8,10 @@ export class CreateArtistDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @Field()
+  @MinLength(8)
+  password: string;
 
   @Field()
     @IsString()

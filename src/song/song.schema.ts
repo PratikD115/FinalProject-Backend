@@ -18,9 +18,6 @@ export class Song extends Document {
   @Prop()
   isActive: boolean;
 
-  @Prop()
-  duration: number;
-
   @Prop({ type: String, enum: SongLanguage, default: SongLanguage.other })
   language: SongLanguage;
 

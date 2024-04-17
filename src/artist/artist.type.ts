@@ -11,6 +11,7 @@ export class ArtistType {
   @Field()
   name: string;
 
+ 
   @Field()
   isActive: boolean;
 

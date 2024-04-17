@@ -16,7 +16,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async createNewUser({ name, email, password }) {
+  async createNewUser(name, email, password) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.UserModel.create({
       name,
@@ -34,14 +34,14 @@ export class AuthService {
       // If user does not exist, throw NotFoundException
       throw new NotFoundException('User does not exist');
     }
-    const isMatched = await bcrypt.compare(password, user.password);
-    if (!isMatched) {
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
       throw new UnauthorizedException('please enter the valid creadentials');
     }
-    console.log('in service');
-    console.log(this.configService.get<string>('JWT_SECRET'));
+
+    // console.log(this.configService.get<string>('JWT_SECRET'));
     const payload = { userId: user.id };
-    const token = await this.jwtService.sign(payload);
-    return { token };
+    const token = this.jwtService.sign(payload);
+    return  {token} ;
   }
 }

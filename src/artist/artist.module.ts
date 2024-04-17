@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ArtistResolver } from './artist.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Artist, artistSchema } from './artist.schema';
@@ -9,7 +9,7 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Artist.name, schema: artistSchema }]),
-    SongModule,
+    forwardRef(()=> SongModule),
     CloudinaryModule,
   ],
   providers: [ArtistResolver, ArtistService],

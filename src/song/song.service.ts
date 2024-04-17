@@ -15,13 +15,12 @@ export class SongService {
   ) {}
 
   async createSong(createSongDto: CreateSongDto, result, image): Promise<Song> {
-    const { title, artist, mood, language, duration, genres } = createSongDto;
+    const { title, artist, mood, language, genres } = createSongDto;
     return await this.songModel.create({
       title,
       artist,
       mood,
       language,
-      duration,
       genres,
       isActive: true,
       streamingLink: result,
@@ -29,7 +28,7 @@ export class SongService {
     });
   }
 
-  async getSongById(songId: string) {
+  async getSongById(songId) {
     try {
       const song = await this.songModel.findOne({
         _id: songId,
@@ -82,5 +81,15 @@ export class SongService {
       .exec();
 
     return updatedSongs;
+  }
+
+  async getSongsByIds(songIds) {
+    const songs: Song[] = await Promise.all(
+      songIds.map(async (songId: string) => {
+        const song: Song = await this.getSongById(songId);
+        return song;
+      }),
+    );
+    return songs;
   }
 }

@@ -2,7 +2,7 @@ import { Field, ID, InputType } from '@nestjs/graphql';
 import { Genres } from '../song-genre.enum';
 import { SongLanguage } from '../song-language.enum';
 import { SongMood } from '../song-mood.enum';
-import { IsNumber, IsString } from 'class-validator';
+import {  IsString } from 'class-validator';
 
 @InputType()
 export class CreateSongDto {
@@ -16,9 +16,7 @@ export class CreateSongDto {
   @Field(() => [Genres])
   genres: Genres[];
 
-  @Field()
-  @IsNumber()
-  duration: number;
+
 
   @Field(() => SongLanguage)
   language: SongLanguage;

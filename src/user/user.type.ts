@@ -1,6 +1,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { SongType } from 'src/song/song.type';
 
-@ObjectType("User")
+@ObjectType('User')
 export class UserType {
   @Field(() => ID)
   id: string;
@@ -13,4 +14,7 @@ export class UserType {
 
   @Field()
   password: string;
+
+  @Field(() => [SongType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
+  favourite?: SongType[];
 }

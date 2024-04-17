@@ -16,4 +16,16 @@ export class UserService {
     const user = await this.UserModel.findOne({ email });
     return user;
   }
+
+  async addToFavourite(userId: string, songId: string) {
+    return await this.UserModel.findByIdAndUpdate(userId, {
+      $addToSet: { favourite: songId },
+    });
+  }
+
+  async getUserById(userId: string) {
+    return await this.UserModel.findById(userId);
+    
+    
+  }
 }
