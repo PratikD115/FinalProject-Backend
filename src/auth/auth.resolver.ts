@@ -16,12 +16,12 @@ export class AuthResolver {
 
   @Mutation(() => UserType)
   async signUp(@Args('createUserDto') createUserDto: CreateUserDto) {
-    const { name, email, password } = createUserDto;
+    const { name, email, password, role } = createUserDto;
     const user = await this.userService.getUserByEmail(email);
     if (user) {
       throw new BadRequestException('Email id is already exist');
     }
-    return await this.authService.createNewUser(name, email, password);
+    return await this.authService.createNewUser(name, email, password, role);
   }
 
   @Mutation(() => AuthResponse)

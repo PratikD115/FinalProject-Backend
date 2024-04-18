@@ -5,6 +5,7 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
+import { UserRole } from '../user-role.enum';
 
 @InputType()
 export class CreateUserDto {
@@ -22,4 +23,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsStrongPassword()
   password: string;
+
+  @Field(()=> UserRole)
+  role: UserRole;
 }

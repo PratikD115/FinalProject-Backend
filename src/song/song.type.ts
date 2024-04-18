@@ -15,8 +15,6 @@ export class SongType {
   @Field(() => ArtistType)
   artist: ArtistType;
 
-  // @Field(() => [ArtistType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
-  // artist?: ArtistType[];
 
   @Field(() => [Genres])
   genres: Genres[];

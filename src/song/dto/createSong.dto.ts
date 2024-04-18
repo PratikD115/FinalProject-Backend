@@ -6,6 +6,7 @@ import {  IsString } from 'class-validator';
 
 @InputType()
 export class CreateSongDto {
+  
   @Field()
   @IsString()
   title: string;

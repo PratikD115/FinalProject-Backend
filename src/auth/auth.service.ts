@@ -16,11 +16,12 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async createNewUser(name, email, password) {
+  async createNewUser(name, email, password, role) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.UserModel.create({
       name,
       email,
+      role,
       password: hashedPassword,
     });
     return user;

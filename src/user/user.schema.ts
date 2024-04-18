@@ -1,7 +1,8 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Schema as MongooseSchema } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
-import { SongType } from "src/song/song.type";
+import { SongType } from 'src/song/song.type';
+import { UserRole } from './user-role.enum';
 
 @Schema()
 export class User extends Document {
@@ -19,6 +20,9 @@ export class User extends Document {
     default: [],
   })
   favourite?: SongType[];
+
+  @Prop(() => UserRole)
+  role: UserRole;
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
