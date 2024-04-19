@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AuthResponse } from './auth.type';
 
 @Injectable()
 export class AuthService {
@@ -27,15 +28,15 @@ export class AuthService {
     return user;
   }
 
-  async login({ email, password }): Promise<{ token: string }> {
+  async login({ inputEmail, inputPassword }) :Promise<AuthResponse> {
     // 1. check if user exists & password is correct
 
-    const user = await this.userService.getUserByEmail(email);
+    const user = await this.userService.getUserByEmail(inputEmail);
     if (!user) {
       // If user does not exist, throw NotFoundException
       throw new NotFoundException('User does not exist');
     }
-    const isValid = await bcrypt.compare(password, user.password);
+    const isValid = await bcrypt.compare(inputPassword, user.password);
     if (!isValid) {
       throw new UnauthorizedException('please enter the valid creadentials');
     }
@@ -43,6 +44,7 @@ export class AuthService {
     // console.log(this.configService.get<string>('JWT_SECRET'));
     const payload = { userId: user.id };
     const token = this.jwtService.sign(payload);
-    return  {token} ;
+    const { id, name, email, role } = user;
+    return { token, id, name, email, role };
   }
 }

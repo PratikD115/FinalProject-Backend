@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Genres } from 'src/song/song-genre.enum';
+import { Language } from 'src/song/song-language.enum';
 import { Song } from 'src/song/song.schema';
 
 @Schema()
@@ -17,11 +18,11 @@ export class Artist extends Document {
   @Prop()
   dateOfBirth: string;
 
-  @Prop()
-  nationality: string;
-
   @Prop({ type: [{ type: String, enum: Genres, default: Genres.other }] })
   genres: Genres[];
+
+  @Prop({ type: String, enum: Language, default: Language.other })
+  language: Language;
 
   @Prop()
   biography: string;

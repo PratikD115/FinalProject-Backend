@@ -9,18 +9,16 @@ export class ArtistService {
     @InjectModel(Artist.name) public readonly ArtistModel: Model<Artist>,
   ) {}
   async createArtist(artistData, artistImage) {
-    const { name, dateOfBirth, nationality, biography, genres } = artistData;
-
+    const { name, dateOfBirth, biography, genres, language } = artistData;
 
     const artist = await this.ArtistModel.create({
       name,
       dateOfBirth,
-      nationality,
       biography,
       genres,
+      language,
       isActive: true,
-      imageLink : artistImage
-
+      imageLink: artistImage,
     });
     return artist;
   }
@@ -31,7 +29,7 @@ export class ArtistService {
   }
 
   async getAllActiveArtist() {
-    const artists = await this.ArtistModel.find({ isActive: true })
+    const artists = await this.ArtistModel.find({ isActive: true });
     return artists;
   }
 
@@ -41,22 +39,28 @@ export class ArtistService {
     });
   }
 
+  
   async softDeleteArtist(artistId) {
     return await this.ArtistModel.findByIdAndUpdate(artistId, {
-      isActive : false
-    })
-    
+      isActive: false,
+    });
   }
 
   async recoverArtist(artistId) {
     return await this.ArtistModel.findByIdAndUpdate(artistId, {
-      isActive: true
-    })
+      isActive: true,
+    });
   }
 
   async removeSongIdFromArtist(artistId, songId) {
     await this.ArtistModel.findByIdAndUpdate(artistId, {
       $pull: { songs: songId },
     });
+  }
+
+  async searchArtist(search: string): Promise<Artist[]> {
+    const regex = new RegExp(search, 'i');
+    const artists  = await this.ArtistModel.find({ name: regex }).exec();
+    return artists ;
   }
 }

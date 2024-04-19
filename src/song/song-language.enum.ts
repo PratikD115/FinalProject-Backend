@@ -1,6 +1,6 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum SongLanguage {
+export enum Language {
   hindi = 'HINDI',
   punjabi = 'PUNJABI',
   bengali = 'BENGALI',
@@ -12,7 +12,7 @@ export enum SongLanguage {
   other = 'OTHER',
 }
 
-registerEnumType(SongLanguage, {
-  name: 'SongLangauge',
+registerEnumType(Language, {
+  name: 'Langauge',
   description: 'Possible language for songs',
 });

@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Genres } from 'src/song/song-genre.enum';
+import { Language } from 'src/song/song-language.enum';
 import { SongType } from 'src/song/song.type';
-
 
 @ObjectType('Artist')
 export class ArtistType {
@@ -11,7 +11,9 @@ export class ArtistType {
   @Field()
   name: string;
 
- 
+  @Field(() => Language)
+  language: Language;
+
   @Field()
   isActive: boolean;
 
@@ -20,9 +22,6 @@ export class ArtistType {
 
   @Field()
   dateOfBirth: string;
-
-  @Field()
-  nationality: string;
 
   @Field(() => [Genres])
   genres: Genres[];

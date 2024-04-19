@@ -9,6 +9,7 @@ import { ArtistModule } from './artist/artist.module';
 import { SongModule } from './song/song.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { graphqlUploadExpress } from 'graphql-upload';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { graphqlUploadExpress } from 'graphql-upload';
     ArtistModule,
     SongModule,
     CloudinaryModule,
+    SearchModule,
   ],
 })
 export class AppModule {

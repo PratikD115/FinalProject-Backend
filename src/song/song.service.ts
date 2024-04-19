@@ -28,6 +28,12 @@ export class SongService {
     });
   }
 
+  async searchSong(search: string): Promise<Song[]> {
+    const regex = new RegExp(search, 'i'); 
+    const songs = await this.songModel.find({ title: regex }).exec();
+    return songs;
+  }
+
   async getSongById(songId) {
     try {
       const song = await this.songModel.findOne({

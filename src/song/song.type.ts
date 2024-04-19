@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Genres } from './song-genre.enum';
-import { SongLanguage } from './song-language.enum';
+import { Language } from './song-language.enum';
 import { SongMood } from './song-mood.enum';
 import { ArtistType } from 'src/artist/artist.type';
 
@@ -22,8 +22,8 @@ export class SongType {
   @Field()
   isActive: boolean;
 
-  @Field(() => SongLanguage)
-  language: SongLanguage;
+  @Field(() => Language)
+  language: Language;
 
   @Field()
   streamingLink: string;

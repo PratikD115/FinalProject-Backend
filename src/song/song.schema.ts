@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { SongLanguage } from './song-language.enum';
+import { Language } from './song-language.enum';
 import { SongMood } from './song-mood.enum';
 import { Genres } from './song-genre.enum';
 
@@ -18,8 +18,8 @@ export class Song extends Document {
   @Prop()
   isActive: boolean;
 
-  @Prop({ type: String, enum: SongLanguage, default: SongLanguage.other })
-  language: SongLanguage;
+  @Prop({ type: String, enum: Language, default: Language.other })
+  language: Language;
 
   @Prop()
   streamingLink: string;
