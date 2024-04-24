@@ -10,6 +10,7 @@ import { SongModule } from './song/song.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { graphqlUploadExpress } from 'graphql-upload';
 import { SearchModule } from './search/search.module';
+import { PlaylistModule } from './playlist/playlist.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SearchModule } from './search/search.module';
     SongModule,
     CloudinaryModule,
     SearchModule,
+    PlaylistModule,
   ],
 })
 export class AppModule {

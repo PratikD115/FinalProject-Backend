@@ -64,8 +64,16 @@ export class ArtistResolver {
   }
 
   @ResolveField(() => [SongType])
-  async songs(@Parent() artist: Artist) {
-    return this.songService.findSongByArtistId(artist.id);
-  }
+  async songs(
+    @Parent() artist: Artist,
+    @Args('page') page: number,
+    @Args('limit') limit: number,
+  ) {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
 
+    const songs = this.songService.findSongByArtistId(artist.id);
+    const paginatedSongs = (await songs).slice(startIndex, endIndex);
+    return paginatedSongs;
+  }
 }

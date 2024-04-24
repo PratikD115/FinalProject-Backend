@@ -15,6 +15,7 @@ import { ArtistService } from 'src/artist/artist.service';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
+
 @Resolver(() => SongType)
 export class SongResolver {
   constructor(
@@ -35,6 +36,18 @@ export class SongResolver {
   ) {
     const song = await this.songService.getAllActiveSongs(page, limit);
     return song;
+  }
+  @Mutation(() => String)
+  async downloadSong(@Args('url') url: string) {
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const base64String = Buffer.from(arrayBuffer).toString('base64');
+      return base64String;
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      throw new Error('Error downloading file');
+    }
   }
 
   @Mutation(() => SongType)

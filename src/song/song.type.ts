@@ -15,7 +15,6 @@ export class SongType {
   @Field(() => ArtistType)
   artist: ArtistType;
 
-
   @Field(() => [Genres])
   genres: Genres[];
 
