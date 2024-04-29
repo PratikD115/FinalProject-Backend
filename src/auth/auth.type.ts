@@ -16,4 +16,7 @@ export class AuthResponse {
 
   @Field()
   email: string;
+
+  @Field()
+  profile: string;
 }

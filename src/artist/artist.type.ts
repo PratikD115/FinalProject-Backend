@@ -11,6 +11,12 @@ export class ArtistType {
   @Field()
   name: string;
 
+  @Field()
+  email: string;
+
+  @Field()
+  password: string;
+
   @Field(() => Language)
   language: Language;
 
@@ -29,7 +35,6 @@ export class ArtistType {
   @Field()
   biography: string;
 
-  // Define virtual field for songs
   @Field(() => [SongType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
   songs?: SongType[];
 }

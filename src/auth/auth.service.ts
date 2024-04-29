@@ -44,7 +44,7 @@ export class AuthService {
     // console.log(this.configService.get<string>('JWT_SECRET'));
     const payload = { userId: user.id };
     const token = this.jwtService.sign(payload);
-    const { id, name, email, role } = user;
-    return { token, id, name, email, role };
+    const { id, name, email, role, profile } = user;
+    return { token, id, name, email, role, profile };
   }
 }

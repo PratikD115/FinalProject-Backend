@@ -29,7 +29,7 @@ export class AuthResolver {
     @Args('loginUserDto') loginUserDto: LoginUserDto,
   ): Promise<{ token: string }> {
     const token = await this.authService.login(loginUserDto);
-    console.log(token);
+   
     return   token;
   }
 }
