@@ -34,7 +34,6 @@ import { PlaylistModule } from './playlist/playlist.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    // Add middleware to handle file uploads
     consumer
       .apply(graphqlUploadExpress())
       .forRoutes({ path: '/graphql', method: RequestMethod.POST });

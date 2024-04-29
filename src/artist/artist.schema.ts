@@ -34,7 +34,7 @@ export class Artist extends Document {
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Song' }],
     default: [],
   })
-  songs?: Song[];
+  songs?: Song[];  
 }
 
 export const artistSchema = SchemaFactory.createForClass(Artist);

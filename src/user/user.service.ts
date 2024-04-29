@@ -9,42 +9,78 @@ export class UserService {
   constructor(@InjectModel(User.name) public readonly UserModel: Model<User>) {}
 
   async getAllUser(): Promise<User[]> {
-    const users = await this.UserModel.find();
-    return users;
+    try {
+      const users = await this.UserModel.find();
+
+      if (!users) {
+        throw new NotFoundException('user not exist');
+      }
+      return users;
+    } catch (error) {
+      throw new Error('failed to fatch the user');
+    }
   }
 
   async getUserByEmail(email: string): Promise<User> {
-    const user = await this.UserModel.findOne({ email });
-    return user;
+    try {
+      const user = await this.UserModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('user is not exist ');
+      }
+      return user;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
-  async addToFavourite(userId: string, songId: string) {
-    return await this.UserModel.findByIdAndUpdate(userId, {
-      $addToSet: { favourite: songId },
-    });
+  async addToFavourite({ userId, songId }) {
+    try {
+      const user = await this.UserModel.findByIdAndUpdate(userId, {
+        $addToSet: { favourite: songId },
+      });
+
+      if (!user) {
+        throw new NotFoundException('user is not exist');
+      }
+      return user;
+    } catch (error) {
+      throw new Error('failed to add song to Favourite');
+    }
   }
 
   async getUserById(userId: string | UserType) {
-    return await this.UserModel.findById(userId);
+    try {
+      const user = await this.UserModel.findById(userId);
+      if (!user) {
+        throw new NotFoundException('user not exist!');
+      }
+      return user;
+    } catch (error) {
+      throw new Error('failed to fetch the user info');
+    }
   }
 
   async updateUserImage(userId: string, imageLink: string) {
-    return this.UserModel.findByIdAndUpdate(
-      userId,
-      { profile: imageLink },
-      { new: true },
-    );
+    try {
+      const updatedUser = await this.UserModel.findByIdAndUpdate(
+        userId,
+        { profile: imageLink },
+        { new: true },
+      );
+
+      if (!updatedUser) {
+        throw new NotFoundException('User not found');
+      }
+
+      return updatedUser;
+    } catch (error) {
+      throw new Error('Failed to update user image');
+    }
   }
 
   async addIdToPlaylist(userId: string, playlistId: string) {
-    const user = await this.UserModel.findById(userId);
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
     const updatedUser = await this.UserModel.findOneAndUpdate(
-      { _id: userId },
+      { id: userId },
       { $addToSet: { playlist: playlistId } }, // Using $addToSet to add only if not already present
       { new: true }, // Return the updated document
     );

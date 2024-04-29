@@ -35,7 +35,7 @@ export class CloudinaryService {
       stream.pipe(uploadStream);
     });
   }
-  async uploadImage(image: FileUpload, path : string): Promise<any> {
+  async uploadImage(image: FileUpload, path: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const stream = image.createReadStream();
       const uploadStream = cloudinary.uploader.upload_stream(
@@ -52,5 +52,24 @@ export class CloudinaryService {
       );
       stream.pipe(uploadStream);
     });
+  }
+
+  async deleteImageByUrl(imageUrl: string): Promise<any> {
+    try {
+      const publicId = this.extractPublicId(imageUrl);
+      const result = await cloudinary.uploader.destroy(publicId);
+      return result;
+    } catch (error) {
+      throw new Error(
+        `Failed to delete image from Cloudinary: ${error.message}`,
+      );
+    }
+  }
+
+  private extractPublicId(imageUrl: string): string {
+    const parts = imageUrl.split('/');
+    const filename = parts.pop();
+    const publicId = filename.split('.')[0];
+    return publicId;
   }
 }

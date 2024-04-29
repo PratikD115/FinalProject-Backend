@@ -4,6 +4,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 import { SongType } from 'src/song/song.type';
 import { UserRole } from './user-role.enum';
 import { PlaylistType } from 'src/playlist/playlist.type';
+import { ArtistType } from 'src/artist/artist.type';
 
 @Schema()
 export class User extends Document {
@@ -33,6 +34,13 @@ export class User extends Document {
 
   @Prop({ default: '' })
   profile: string;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Artist',
+    default: null,
+  })
+  artistId?: ArtistType;
 }
 
 export const userSchema = SchemaFactory.createForClass(User);

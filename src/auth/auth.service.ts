@@ -28,7 +28,7 @@ export class AuthService {
     return user;
   }
 
-  async login({ inputEmail, inputPassword }) :Promise<AuthResponse> {
+  async login({ inputEmail, inputPassword }): Promise<AuthResponse> {
     // 1. check if user exists & password is correct
 
     const user = await this.userService.getUserByEmail(inputEmail);
@@ -42,7 +42,9 @@ export class AuthService {
     }
 
     // console.log(this.configService.get<string>('JWT_SECRET'));
-    const payload = { userId: user.id };
+    console.log('in the login');
+    console.log(user.role);
+    const payload = { userId: user.id, role: user.role };
     const token = this.jwtService.sign(payload);
     const { id, name, email, role, profile } = user;
     return { token, id, name, email, role, profile };

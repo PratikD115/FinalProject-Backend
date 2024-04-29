@@ -13,8 +13,23 @@ export class CloudinaryResolver {
     @Args('file', { type: () => GraphQLUpload })
     file: FileUpload,
   ): Promise<string> {
-    console.log('in the resolver');
-    const result = await this.cloudinaryService.uploadAudio(file, "samples");
-    return result.secure_url; // or any other relevant field from Cloudinary response
+    try {
+      const result = await this.cloudinaryService.uploadAudio(file, 'samples');
+      return result.secure_url;
+    } catch (error) {
+      throw new Error('failed to uplaod the image');
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async deleteImage(@Args('imageUrl') imageUrl: string): Promise<boolean> {
+    try {
+      // Delete the image from Cloudinary
+      await this.cloudinaryService.deleteImageByUrl(imageUrl);
+      return true; // Image deleted successfully
+    } catch (error) {
+      console.error(`Failed to delete image: ${error.message}`);
+      return false; // Image deletion failed
+    }
   }
 }

@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { SongModule } from 'src/song/song.module';
 import { PlaylistModule } from 'src/playlist/playlist.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { ArtistModule } from 'src/artist/artist.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
     SongModule,
     JwtModule,
     PlaylistModule,
+    ArtistModule,
     CloudinaryModule
   ],
   providers: [UserResolver, UserService],

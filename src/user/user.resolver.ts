@@ -18,6 +18,8 @@ import { PlaylistType } from 'src/playlist/playlist.type';
 import { PlaylistService } from 'src/playlist/playlist.service';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { ArtistType } from 'src/artist/artist.type';
+import { ArtistService } from 'src/artist/artist.service';
 
 @Resolver(() => UserType)
 export class UserResolver {
@@ -26,32 +28,38 @@ export class UserResolver {
     private songService: SongService,
     private playlistService: PlaylistService,
     private cloudinaryService: CloudinaryService,
+    private artistService: ArtistService,
   ) {}
 
   @Query(() => [UserType])
   @UseGuards(JwtAuthGuard)
   getuser() {
-    return this.userService.getAllUser();
-  }
-
-  @Mutation(() => UserType)
-  addToFavourite(
-    @Args('addSongToFavourite') addSongToFavourite: AddSongToFavourite,
-  ) {
-    const { userId, songId } = addSongToFavourite;
-    return this.userService.addToFavourite(userId, songId);
+    try {
+      return this.userService.getAllUser();
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   @Query(() => [SongType])
   async getFavouriteSongs(@Args('userId') userId: string) {
-    const user = await this.userService.getUserById(userId);
-    const songs = await this.songService.getSongsByIds(user.favourite);
-    return songs;
+    try {
+      const user = await this.userService.getUserById(userId);
+      const songs = await this.songService.getSongsByIds(user.favourite);
+
+      return songs;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   @Query(() => UserType)
   async getUserById(@Args('userId') userId: string) {
-    return await this.userService.getUserById(userId);
+    try {
+      return await this.userService.getUserById(userId);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   @Mutation(() => UserType)
@@ -59,25 +67,58 @@ export class UserResolver {
     @Args('image', { type: () => GraphQLUpload }) image: FileUpload,
     @Args('userId') userId: string,
   ) {
-    const user = await this.userService.getUserById(userId);
-    if (!user) {
-      throw new NotFoundException('user is not exist ');
+    let imageLink: string;
+    try {
+      const user = await this.userService.getUserById(userId);
+      if (!user) {
+        throw new NotFoundException('user is not exist ');
+      }
+      imageLink = await this.cloudinaryService.uploadAudio(image, 'user-Image');
+      const newUser = await this.userService.updateUserImage(userId, imageLink);
+      return newUser;
+    } catch (error) {
+      if (imageLink) {
+        await this.cloudinaryService.deleteImageByUrl(imageLink);
+      }
+      throw new Error(error);
     }
-    const imageLink = await this.cloudinaryService.uploadAudio(
-      image,
-      'song-audio',
-    );
-    const newUser = await this.userService.updateUserImage(userId, imageLink);
-    return newUser;
+  }
+
+  @Mutation(() => UserType)
+  addToFavourite(
+    @Args('addSongToFavourite') addSongToFavourite: AddSongToFavourite,
+  ) {
+    try {
+      return this.userService.addToFavourite(addSongToFavourite);
+    } catch (error) {
+      throw new Error('failed to add the song in the favourite');
+    }
   }
 
   @ResolveField(() => [SongType])
   async favourite(@Parent() user: User) {
-    return this.songService.getSongsByIds(user.favourite);
+    try {
+      return this.songService.getSongsByIds(user.favourite);
+    } catch (error) {
+      throw new Error('failed to fetch the songs');
+    }
+  }
+
+  @ResolveField(() => ArtistType)
+  async artistId(@Parent() user: User) {
+    try {
+      return this.artistService.getArtistById(user.artistId);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   @ResolveField(() => [PlaylistType])
   async playlist(@Parent() user: User) {
-    return this.playlistService.getPlaylistByIds(user.playlist);
+    try {
+      return this.playlistService.getPlaylistByIds(user.playlist);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }

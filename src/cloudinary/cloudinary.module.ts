@@ -4,6 +4,6 @@ import { CloudinaryResolver } from './cloudinary.resolver';
 
 @Module({
   providers: [CloudinaryService, CloudinaryResolver],
-  exports : [CloudinaryService]
+  exports: [CloudinaryService],
 })
 export class CloudinaryModule {}

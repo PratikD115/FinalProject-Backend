@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 
-
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
@@ -30,8 +29,9 @@ export class JwtAuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
-     
+
       req.user = payload;
+      console.log('payload' + payload);
     } catch {
       throw new UnauthorizedException('Invalid token');
     }

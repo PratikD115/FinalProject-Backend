@@ -11,12 +11,6 @@ export class ArtistType {
   @Field()
   name: string;
 
-  @Field()
-  email: string;
-
-  @Field()
-  password: string;
-
   @Field(() => Language)
   language: Language;
 
@@ -35,6 +29,6 @@ export class ArtistType {
   @Field()
   biography: string;
 
-  @Field(() => [SongType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
+  @Field(() => [SongType], { nullable: true })
   songs?: SongType[];
 }
