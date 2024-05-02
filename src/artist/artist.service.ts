@@ -39,6 +39,16 @@ export class ArtistService {
     });
   }
 
+
+  async getArtistsByIds(artistIds) {
+    const artists: Artist[] = await Promise.all(
+      artistIds.map(async (artistId: string) => {
+        const artist: Artist = await this.getArtistById(artistId);
+        return artist;
+      }),
+    );
+    return artists;
+  }
   
   async softDeleteArtist(artistId) {
     return await this.ArtistModel.findByIdAndUpdate(artistId, {

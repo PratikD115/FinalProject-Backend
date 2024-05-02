@@ -31,6 +31,7 @@ export class PlaylistResolver {
     if (!user) {
       throw new NotFoundException('user is not exist');
     }
+    
     const playlist = await this.playlistService.createPlaylistAndAddSong(
       songId,
       userId,

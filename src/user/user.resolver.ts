@@ -85,6 +85,14 @@ export class UserResolver {
   }
 
   @Mutation(() => UserType)
+  async addArtistToUser(
+    @Args('userId') userId: string,
+    @Args('artistId') artistId: string,
+  ) {
+    return await this.userService.addArtistToUser(userId, artistId);
+  }
+
+  @Mutation(() => UserType)
   addToFavourite(
     @Args('addSongToFavourite') addSongToFavourite: AddSongToFavourite,
   ) {
@@ -108,6 +116,15 @@ export class UserResolver {
   async artistId(@Parent() user: User) {
     try {
       return this.artistService.getArtistById(user.artistId);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  @ResolveField(() => ArtistType)
+  async follow(@Parent() user: User) {
+    try {
+      return this.artistService.getArtistsByIds(user.follow);
     } catch (error) {
       throw new Error(error);
     }

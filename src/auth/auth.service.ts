@@ -24,29 +24,24 @@ export class AuthService {
       email,
       role,
       password: hashedPassword,
+      profile : "https://res.cloudinary.com/ddiy656zq/image/upload/v1714641226/user-Image/aprkhw2lucaachvg1ojs.png"
     });
     return user;
   }
 
   async login({ inputEmail, inputPassword }): Promise<AuthResponse> {
-    // 1. check if user exists & password is correct
+      const user = await this.userService.getUserByEmail(inputEmail);
+      if (!user) {
+        throw new NotFoundException('User does not exist');
+      }
+      const isValid = await bcrypt.compare(inputPassword, user.password);
+      if (!isValid) {
+        throw new UnauthorizedException('please enter the valid creadentials');
+      }
 
-    const user = await this.userService.getUserByEmail(inputEmail);
-    if (!user) {
-      // If user does not exist, throw NotFoundException
-      throw new NotFoundException('User does not exist');
-    }
-    const isValid = await bcrypt.compare(inputPassword, user.password);
-    if (!isValid) {
-      throw new UnauthorizedException('please enter the valid creadentials');
-    }
-
-    // console.log(this.configService.get<string>('JWT_SECRET'));
-    console.log('in the login');
-    console.log(user.role);
-    const payload = { userId: user.id, role: user.role };
-    const token = this.jwtService.sign(payload);
-    const { id, name, email, role, profile } = user;
-    return { token, id, name, email, role, profile };
+      const payload = { userId: user.id, role: user.role };
+      const token = this.jwtService.sign(payload);
+      const { id, name, email, role, profile } = user;
+      return { token, id, name, email, role, profile };
   }
 }

@@ -23,11 +23,7 @@ export class UserService {
 
   async getUserByEmail(email: string): Promise<User> {
     try {
-      const user = await this.UserModel.findOne({ email });
-      if (!user) {
-        throw new NotFoundException('user is not exist ');
-      }
-      return user;
+      return await this.UserModel.findOne({ email });
     } catch (error) {
       throw new Error(error);
     }
@@ -48,6 +44,20 @@ export class UserService {
     }
   }
 
+  async addArtistToUser(userId: string, artistId: string) {
+    console.log(userId, artistId);
+    const user = await this.UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { follow: artistId } },
+      {new : true}
+      
+    );
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
   async getUserById(userId: string | UserType) {
     try {
       const user = await this.UserModel.findById(userId);
@@ -80,12 +90,11 @@ export class UserService {
 
   async addIdToPlaylist(userId: string, playlistId: string) {
     const updatedUser = await this.UserModel.findOneAndUpdate(
-      { id: userId },
+      { _id: userId },
       { $addToSet: { playlist: playlistId } }, // Using $addToSet to add only if not already present
       { new: true }, // Return the updated document
     );
-    if (!updatedUser) {
-      throw new NotFoundException('User not found');
-    }
+
+    return updatedUser;
   }
 }

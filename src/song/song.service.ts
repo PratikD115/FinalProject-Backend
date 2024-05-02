@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Song } from './song.schema';
 import { CreateSongDto } from './dto/createSong.dto';
+import { SongType } from './song.type';
 
 @Injectable()
 export class SongService {
@@ -28,8 +29,13 @@ export class SongService {
     });
   }
 
+  async findByLanguage(language: string): Promise<Song[]> {
+    console.log('in the service ' + language);
+    return this.songModel.find({ language });
+  }
+
   async searchSong(search: string): Promise<Song[]> {
-    const regex = new RegExp(search, 'i'); 
+    const regex = new RegExp(search, 'i');
     const songs = await this.songModel.find({ title: regex }).exec();
     return songs;
   }

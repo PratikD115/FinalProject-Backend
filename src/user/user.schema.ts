@@ -24,6 +24,12 @@ export class User extends Document {
   favourite?: SongType[];
 
   @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Artist' }],
+    default: [],
+  })
+  follow?: ArtistType[];
+  
+  @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }],
     default: [],
   })

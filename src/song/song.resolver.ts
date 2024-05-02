@@ -15,7 +15,6 @@ import { ArtistService } from 'src/artist/artist.service';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
-
 @Resolver(() => SongType)
 export class SongResolver {
   constructor(
@@ -37,9 +36,18 @@ export class SongResolver {
     const song = await this.songService.getAllActiveSongs(page, limit);
     return song;
   }
+
+  @Query(() => [SongType])
+  async songsByLanguage(@Args('language') language: string): Promise<Song[]> {
+    console.log('in the langauge resolver ' +  language);
+    // Call the service method to fetch songs by language
+    return this.songService.findByLanguage(language);
+  }
+
   @Mutation(() => String)
   async downloadSong(@Args('url') url: string) {
     try {
+      console.log('in the song download');
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
       const base64String = Buffer.from(arrayBuffer).toString('base64');

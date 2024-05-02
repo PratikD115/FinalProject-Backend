@@ -24,6 +24,9 @@ export class UserType {
   @Field(() => [SongType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
   favourite?: SongType[];
 
+  @Field(() => [ArtistType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
+  follow?: ArtistType[];
+
   @Field(() => [PlaylistType], { nullable: true })
   playlist?: PlaylistType[];
 
