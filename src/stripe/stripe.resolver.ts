@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { StripeService } from './stripe.service';
 import { UserService } from 'src/user/user.service';
-import { StripeType } from './stripe.type';
+import { Body } from '@nestjs/common';
 
 @Resolver()
 export class StripeResolver {
@@ -18,14 +18,16 @@ export class StripeResolver {
     console.log('in the resolver');
     const user = await this.userService.getUserById(userId);
 
-    
-
     // Call the Stripe service to create a subscription
     const subscription = await this.stripeService.myPaymentServiceStart(
       user,
       price,
     );
     return subscription;
+  }
+  @Mutation(() => Boolean)
+  async StripeWebhook(@Body() event: any) {
+    return await this.stripeService.handleStripeWebhook(event);
   }
 }
 

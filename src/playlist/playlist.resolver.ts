@@ -49,6 +49,9 @@ export class PlaylistResolver {
     return await this.playlistService.addSongToPlaylist(playlistId, songId);
     }
 
+  
+  
+  
   @ResolveField(() => [SongType])
   async songs(@Parent() playlist: Playlist) {
     return await this.songService.getSongsByIds(playlist.songs);

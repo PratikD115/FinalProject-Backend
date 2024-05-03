@@ -15,8 +15,7 @@ export class Subscription extends Document {
   @Prop()
   planId: string;
 
-
-  // status
-  
+  @Prop()
+  status: string;
 }
 export const stripeSchema = SchemaFactory.createForClass(Subscription);

@@ -55,7 +55,14 @@ export class StripeService {
         });
 
         // Create a new subscription and update the user's subscriptions
-       
+        await this.StripeModel.create({
+          planId: planId,
+          price,
+          userId: user.id,
+          sessionId: session.url,
+          status: 'complete',
+        });
+
         return session.url; // Return the URL for the payment session
       }
     } catch (error) {
@@ -63,74 +70,76 @@ export class StripeService {
       throw new NotFoundException(error.message);
     }
   }
+
+  async handleStripeWebhook(
+    event: any,
+  ): Promise<{ status: string; message?: string }> {
+    try {
+      console.log('event is ' + event);
+      // Handle specific events
+      switch (event.type.toString()) {
+        case 'checkout.session.completed':
+          const paymentIntent = event.data.object;
+          console.log(paymentIntent);
+          // Handle payment success logic here
+          // const currentUser = await this.userModel.findById(
+          //   paymentIntent.client_reference_id,
+          // );
+          // const subscriptionDataStore = await this.subscriptionService.findById(
+          //   currentUser.subscriptions,
+          // );
+          // // Get the current date
+          // const currentDate = new Date();
+
+          // // Add month to the current date
+          // let futureDate;
+          // if (subscriptionDataStore.planType === 'Basic') {
+          //   futureDate = new Date(
+          //     currentDate.getTime() + 30 * 24 * 60 * 60 * 1000,
+          //   );
+          // } else if (subscriptionDataStore.planType === 'Standard') {
+          //   futureDate = new Date(
+          //     currentDate.getTime() + 90 * 24 * 60 * 60 * 1000,
+          //   );
+          // } else if (subscriptionDataStore.planType === 'Premium') {
+          //   futureDate = new Date(
+          //     currentDate.getTime() + 361 * 24 * 60 * 60 * 1000,
+          //   );
+          // }
+
+          // if (subscriptionDataStore) {
+          //   const updatedSubscription = {
+          //     ...subscriptionDataStore._doc,
+          //     planStartDate: paymentIntent.created,
+          //     planEndDate: futureDate,
+          //     planStatus: paymentIntent.payment_status,
+          //   };
+          //   await this.subscriptionService.updateSubscription(
+          //     currentUser.subscriptions,
+          //     updatedSubscription,
+          //   );
+          // }
+          break;
+        case 'payment_intent.payment_failed':
+          // const failedPaymentIntent = event.data.object;
+          // Handle payment failure logic here
+          throw new Error('Payment failed');
+        // Handle other event types as needed
+        default:
+          console.log(`Unhandled event type: ${event.type}`);
+          break;
+      }
+
+      // Return a success response to Stripe
+      return { status: 'success' };
+    } catch (error) {
+      // Catch any errors and log them
+      console.log('Webhook signature verification failed.', error);
+      // Return an error response
+      return {
+        status: 'error',
+        message: 'Webhook signature verification failed',
+      };
+    }
+  }
 }
-
-// async handleStripeWebhook(
-//     event: StripeEvent,
-//   ): Promise<{ status: string; message?: string }> {
-//     try {
-//       // Handle specific events
-//       switch (event.type.toString()) {
-//         case 'checkout.session.completed':
-//           const paymentIntent = event.data.object;
-//           // Handle payment success logic here
-//           const currentUser = await this.userModel.findById(
-//             paymentIntent.client_reference_id,
-//           );
-//           const subscriptionDataStore = await this.subscriptionService.findById(
-//             currentUser.subscriptions,
-//           );
-//           // Get the current date
-//           const currentDate = new Date();
-
-//           // Add month to the current date
-//           let futureDate;
-//           if (subscriptionDataStore.planType === 'Basic') {
-//             futureDate = new Date(
-//               currentDate.getTime() + 30 * 24 * 60 * 60 * 1000,
-//             );
-//           } else if (subscriptionDataStore.planType === 'Standard') {
-//             futureDate = new Date(
-//               currentDate.getTime() + 90 * 24 * 60 * 60 * 1000,
-//             );
-//           } else if (subscriptionDataStore.planType === 'Premium') {
-//             futureDate = new Date(
-//               currentDate.getTime() + 361 * 24 * 60 * 60 * 1000,
-//             );
-//           }
-
-//           if (subscriptionDataStore) {
-//             const updatedSubscription = {
-//               ...subscriptionDataStore._doc,
-//               planStartDate: paymentIntent.created,
-//               planEndDate: futureDate,
-//               planStatus: paymentIntent.payment_status,
-//             };
-//             await this.subscriptionService.updateSubscription(
-//               currentUser.subscriptions,
-//               updatedSubscription,
-//             );
-//           }
-//           break;
-//         case 'payment_intent.payment_failed':
-//           const failedPaymentIntent = event.data.object;
-//           // Handle payment failure logic here
-//           throw new Error('Payment failed');
-//         // Handle other event types as needed
-//         default:
-//           console.log(Unhandled event type: ${event.type});
-//           break;
-//       }
-
-//       // Return a success response to Stripe
-//       return { status: 'success' };
-//     } catch (error) {
-//       // Catch any errors and log them
-//       console.log('Webhook signature verification failed.', error);
-//       // Return an error response
-//       return {
-//         status: 'error',
-//         message: 'Webhook signature verification failed',
-//       };
-//     }
-//   }
