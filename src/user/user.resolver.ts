@@ -20,6 +20,8 @@ import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ArtistType } from 'src/artist/artist.type';
 import { ArtistService } from 'src/artist/artist.service';
+import { SubscriptionType } from 'src/subscription/subscription.type';
+import { SubscriptionService } from 'src/subscription/subscription.service';
 
 @Resolver(() => UserType)
 export class UserResolver {
@@ -29,6 +31,7 @@ export class UserResolver {
     private playlistService: PlaylistService,
     private cloudinaryService: CloudinaryService,
     private artistService: ArtistService,
+    private subscriptionService : SubscriptionService
   ) {}
 
   @Query(() => [UserType])
@@ -137,5 +140,11 @@ export class UserResolver {
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  @ResolveField(()=> SubscriptionType)
+  async subscribe(@Parent() user: User)
+  {
+    return this.subscriptionService.getSubscriptionById(user.subscribe);
   }
 }

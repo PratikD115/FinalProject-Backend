@@ -44,13 +44,26 @@ export class UserService {
     }
   }
 
+  async addSubscription(userId: string, subscriptionId: string) {
+    const user = await this.UserModel.findByIdAndUpdate(
+      userId,
+      { subscribe: subscriptionId },
+      { new: true },
+    );
+  }
+  async addAsArtist(userId: string, artistId: string) {
+    const user = await this.UserModel.findByIdAndUpdate(
+      userId,
+      { artistId },
+      { new: true },
+    );
+  }
   async addArtistToUser(userId: string, artistId: string) {
     console.log(userId, artistId);
     const user = await this.UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { follow: artistId } },
-      {new : true}
-      
+      { new: true },
     );
 
     if (!user) {
@@ -58,8 +71,10 @@ export class UserService {
     }
     return user;
   }
-  async getUserById(userId: string | UserType) {
+  async getUserById(userId) {
     try {
+      console.log('user');
+      console.log(userId);
       const user = await this.UserModel.findById(userId);
       if (!user) {
         throw new NotFoundException('user not exist!');
@@ -91,8 +106,8 @@ export class UserService {
   async addIdToPlaylist(userId: string, playlistId: string) {
     const updatedUser = await this.UserModel.findOneAndUpdate(
       { _id: userId },
-      { $addToSet: { playlist: playlistId } }, // Using $addToSet to add only if not already present
-      { new: true }, // Return the updated document
+      { $addToSet: { playlist: playlistId } }, 
+      { new: true }, 
     );
 
     return updatedUser;

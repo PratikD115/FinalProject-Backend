@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -8,6 +8,7 @@ import { SongModule } from 'src/song/song.module';
 import { PlaylistModule } from 'src/playlist/playlist.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { ArtistModule } from 'src/artist/artist.module';
+import { SubscriptionModule } from 'src/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { ArtistModule } from 'src/artist/artist.module';
     JwtModule,
     PlaylistModule,
     ArtistModule,
-    CloudinaryModule
+    CloudinaryModule,
+    SubscriptionModule
   ],
   providers: [UserResolver, UserService],
   exports: [UserService],

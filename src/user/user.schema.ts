@@ -5,6 +5,7 @@ import { SongType } from 'src/song/song.type';
 import { UserRole } from './user-role.enum';
 import { PlaylistType } from 'src/playlist/playlist.type';
 import { ArtistType } from 'src/artist/artist.type';
+import { SubscriptionType } from 'src/subscription/subscription.type';
 
 @Schema()
 export class User extends Document {
@@ -47,6 +48,15 @@ export class User extends Document {
     default: null,
   })
   artistId?: ArtistType;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Subscription',
+    default: null,
+  })
+  subscribe?: SubscriptionType;
+  
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
+

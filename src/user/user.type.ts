@@ -3,6 +3,7 @@ import { SongType } from 'src/song/song.type';
 import { UserRole } from './user-role.enum';
 import { PlaylistType } from 'src/playlist/playlist.type';
 import { ArtistType } from 'src/artist/artist.type';
+import { SubscriptionType } from 'src/subscription/subscription.type';
 
 @ObjectType('User')
 export class UserType {
@@ -35,4 +36,7 @@ export class UserType {
 
   @Field()
   artistId: ArtistType;
+
+  @Field()
+  subscribe : SubscriptionType;
 }

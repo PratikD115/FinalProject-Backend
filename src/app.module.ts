@@ -74,7 +74,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { SearchModule } from './search/search.module';
 import { PlaylistModule } from './playlist/playlist.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
-import { StripeModule } from './stripe/stripe.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -101,7 +101,7 @@ import { StripeModule } from './stripe/stripe.module';
     CloudinaryModule,
     SearchModule,
     PlaylistModule,
-    StripeModule,
+    SubscriptionModule,
   ],
 })
 export class AppModule {

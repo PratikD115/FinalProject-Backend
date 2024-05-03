@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Subscription } from './subscription.schema';
 import { Model } from 'mongoose';
-import { Subscription } from './stripe.schema';
 import Stripe from 'stripe';
+import { SubscriptionType } from './subscription.type';
 
 @Injectable()
-export class StripeService {
+export class SubscriptionService {
   private stripe;
   constructor(
     @InjectModel(Subscription.name)
-    private readonly StripeModel: Model<Subscription>,
+    private readonly subscriptionModel: Model<Subscription>,
   ) {
     this.stripe = new Stripe(
       'sk_test_51PBuwgAJIxE0OtQlv14edFnj1KaKpvcQx7VoiJwd3f4cd2o9jRv1b6OUomdvmWh7GKC1rfBplSdRfDavo2hACVjE009jqDePzr',
@@ -19,7 +20,7 @@ export class StripeService {
     );
   }
 
-  async myPaymentServiceStart(user: any, price: number): Promise<string> {
+  async myPaymentServiceStart(user: any, price: number) :Promise<{ sessionURL: string, subscriptionId: string }>{
     try {
       console.log(user);
       // Define plan IDs for different subscription levels
@@ -34,7 +35,7 @@ export class StripeService {
       if (price === 3) planId = Basic;
       if (price === 8) planId = Standard;
       if (price === 29) planId = Premium;
-      console.log(planId);
+   
       if (price !== 0 && user) {
         // Ensure user exists before accessing its properties
 
@@ -53,17 +54,27 @@ export class StripeService {
           success_url: 'http://localhost:3000',
           cancel_url: 'http://localhost:3000',
         });
+        let month;
+        if (price === 3) month = 1;
+        if (price === 8) month = 3;
+        if (price === 29) month = 12;
+        const startDate = new Date();
 
+        let expireDate = new Date(startDate);
+        expireDate.setMonth(expireDate.getMonth() + month);
         // Create a new subscription and update the user's subscriptions
-        await this.StripeModel.create({
+        const subscription = await this.subscriptionModel.create({
           planId: planId,
           price,
           userId: user.id,
           sessionId: session.url,
+          startDate,
+          expireDate,
           status: 'complete',
         });
-
-        return session.url; // Return the URL for the payment session
+       
+        return {sessionURL : session.url , subscriptionId : subscription.id} 
+       
       }
     } catch (error) {
       // Catch any errors and throw a NotFoundException
@@ -71,6 +82,9 @@ export class StripeService {
     }
   }
 
+  async getSubscriptionById(subscribeId: SubscriptionType | string) {
+    return await this.subscriptionModel.findById(subscribeId);
+  }
   async handleStripeWebhook(
     event: any,
   ): Promise<{ status: string; message?: string }> {
@@ -92,6 +106,7 @@ export class StripeService {
           // const currentDate = new Date();
 
           // // Add month to the current date
+
           // let futureDate;
           // if (subscriptionDataStore.planType === 'Basic') {
           //   futureDate = new Date(
