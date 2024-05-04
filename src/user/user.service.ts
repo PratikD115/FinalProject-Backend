@@ -44,6 +44,21 @@ export class UserService {
     }
   }
 
+  async removeToFavourite({ userId, songId }) {
+    try {
+      const user = await this.UserModel.findByIdAndUpdate(userId, {
+        $pull: { favourite: songId },
+      });
+
+      if (!user) {
+        throw new NotFoundException('user is not exist');
+      }
+      return user;
+    } catch (error) {
+      throw new Error('failed to add song to Favourite');
+    }
+  }
+
   async addSubscription(userId: string, subscriptionId: string) {
     const user = await this.UserModel.findByIdAndUpdate(
       userId,
@@ -106,8 +121,8 @@ export class UserService {
   async addIdToPlaylist(userId: string, playlistId: string) {
     const updatedUser = await this.UserModel.findOneAndUpdate(
       { _id: userId },
-      { $addToSet: { playlist: playlistId } }, 
-      { new: true }, 
+      { $addToSet: { playlist: playlistId } },
+      { new: true },
     );
 
     return updatedUser;

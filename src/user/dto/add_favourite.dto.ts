@@ -2,7 +2,7 @@ import { Field, InputType } from '@nestjs/graphql';
 
 
 @InputType()
-export class AddSongToFavourite { 
+export class FavouriteSong { 
 
     @Field()
     userId: string 
@@ -10,5 +10,4 @@ export class AddSongToFavourite {
     @Field()
     songId : string 
 }
-
 

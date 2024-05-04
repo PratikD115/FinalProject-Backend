@@ -10,7 +10,7 @@ import { UserType } from './user.type';
 import { UserService } from './user.service';
 import { NotFoundException, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
-import { AddSongToFavourite } from './dto/add_favourite.dto';
+import { FavouriteSong } from './dto/add_favourite.dto';
 import { SongService } from 'src/song/song.service';
 import { SongType } from 'src/song/song.type';
 import { User } from './user.schema';
@@ -97,12 +97,23 @@ export class UserResolver {
 
   @Mutation(() => UserType)
   addToFavourite(
-    @Args('addSongToFavourite') addSongToFavourite: AddSongToFavourite,
+    @Args('addSongToFavourite') addSongToFavourite: FavouriteSong,
   ) {
     try {
       return this.userService.addToFavourite(addSongToFavourite);
     } catch (error) {
       throw new Error('failed to add the song in the favourite');
+    }
+  }
+
+  @Mutation(() => UserType)
+  remvoeToFavourite(
+    @Args('removeSongToFavourite') removeSongToFavourite: FavouriteSong,
+  ) {
+    try {
+      return this.userService.removeToFavourite(removeSongToFavourite);
+    } catch (error) {
+      throw new Error('failed to remove the song in the favourite');
     }
   }
 
