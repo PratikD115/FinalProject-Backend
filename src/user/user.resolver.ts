@@ -31,7 +31,7 @@ export class UserResolver {
     private playlistService: PlaylistService,
     private cloudinaryService: CloudinaryService,
     private artistService: ArtistService,
-    private subscriptionService : SubscriptionService
+    private subscriptionService: SubscriptionService,
   ) {}
 
   @Query(() => [UserType])
@@ -96,6 +96,14 @@ export class UserResolver {
   }
 
   @Mutation(() => UserType)
+  async removeArtistToUser(
+    @Args('userId') userId: string,
+    @Args('artistId') artistId: string,
+  ) {
+    return await this.userService.removeArtistToUser(userId, artistId);
+  }
+
+  @Mutation(() => UserType)
   addToFavourite(
     @Args('addSongToFavourite') addSongToFavourite: FavouriteSong,
   ) {
@@ -107,7 +115,7 @@ export class UserResolver {
   }
 
   @Mutation(() => UserType)
-  remvoeToFavourite(
+  removeToFavourite(
     @Args('removeSongToFavourite') removeSongToFavourite: FavouriteSong,
   ) {
     try {
@@ -153,9 +161,8 @@ export class UserResolver {
     }
   }
 
-  @ResolveField(()=> SubscriptionType)
-  async subscribe(@Parent() user: User)
-  {
+  @ResolveField(() => SubscriptionType)
+  async subscribe(@Parent() user: User) {
     return this.subscriptionService.getSubscriptionById(user.subscribe);
   }
 }

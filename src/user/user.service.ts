@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.schema';
-import { UserType } from './user.type';
 
 @Injectable()
 export class UserService {
@@ -65,13 +64,16 @@ export class UserService {
       { subscribe: subscriptionId },
       { new: true },
     );
+    return user;
   }
+
   async addAsArtist(userId: string, artistId: string) {
     const user = await this.UserModel.findByIdAndUpdate(
       userId,
       { artistId },
       { new: true },
     );
+    return user;
   }
   async addArtistToUser(userId: string, artistId: string) {
     console.log(userId, artistId);
@@ -86,6 +88,20 @@ export class UserService {
     }
     return user;
   }
+  async removeArtistToUser(userId: string, artistId: string) {
+    const user = await this.UserModel.findByIdAndUpdate(
+      userId,
+      { $pull: { follow: artistId } },
+      { new: true },
+    );
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+
   async getUserById(userId) {
     try {
       console.log('user');
