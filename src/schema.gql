@@ -1,0 +1,209 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Artist {
+  id: ID!
+  name: String!
+  language: Langauge!
+  isActive: Boolean!
+  imageLink: String!
+  dateOfBirth: String!
+  genres: [Genres!]!
+  biography: String!
+  songs(page: Float!, limit: Float!): [SongType!]
+}
+
+"""Possible language for songs"""
+enum Langauge {
+  hindi
+  punjabi
+  bengali
+  tamil
+  telugu
+  marathi
+  gujarati
+  english
+  other
+}
+
+"""Possible genres for songs"""
+enum Genres {
+  rock
+  fusion
+  romantic
+  pop
+  jazz
+  classical
+  hip_hop
+  electronic
+  country
+  blues
+  indie
+  folk
+  rap
+  soul
+  disco
+  techno
+  chill_out
+  sufi
+  sad
+  other
+}
+
+type SongType {
+  id: ID!
+  title: String!
+  artist: Artist!
+  genres: [Genres!]!
+  isActive: Boolean!
+  language: Langauge!
+  streamingLink: String!
+  imageLink: String!
+  mood: [SongMood!]!
+}
+
+"""Possible moods for songs"""
+enum SongMood {
+  happy
+  sad
+  romantic
+  energetic
+  peaceful
+  calm
+  party
+  love
+  inspirational
+  hopefull
+  exciting
+  chill
+  anxious
+  danceable
+  joyful
+  other
+}
+
+type PlaylistType {
+  id: ID!
+  user: User
+  playlistName: String!
+  songs: [SongType!]
+}
+
+type SubscriptionType {
+  id: ID!
+  price: String!
+  userId: User!
+  sessionId: String!
+  planId: String!
+  startDate: DateTime!
+  expireDate: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+  role: UserRole!
+  favourite: [SongType!]
+  follow: [Artist!]
+  playlist: [PlaylistType!]
+  profile: String!
+  artistId: Artist!
+  subscribe: SubscriptionType!
+}
+
+"""Possible roles for user"""
+enum UserRole {
+  user
+  artist
+  admin
+}
+
+type AuthResponse {
+  token: String!
+  id: String!
+  name: String!
+  role: String!
+  email: String!
+  profile: String!
+}
+
+type Query {
+  getuser: [User!]!
+  getFavouriteSongs(userId: String!): [SongType!]!
+  getUserById(userId: String!): User!
+  SongById(id: String!): SongType!
+  getAllActiveSongs(page: Int! = 1, limit: Int! = 10): [SongType!]!
+  songsByLanguage(language: String!): [SongType!]!
+  getArtistById(id: String!): Artist!
+  getAllActiveArtist: [Artist!]!
+  searchSong(search: String!): [SongType!]!
+  searchArtist(search: String!): [Artist!]!
+}
+
+type Mutation {
+  signUp(createUserDto: CreateUserDto!): User!
+  login(loginUserDto: LoginUserDto!): AuthResponse!
+  uploadImage(image: Upload!, userId: String!): User!
+  addArtistToUser(userId: String!, artistId: String!): User!
+  removeArtistToUser(userId: String!, artistId: String!): User!
+  addToFavourite(addSongToFavourite: FavouriteSong!): User!
+  removeToFavourite(removeSongToFavourite: FavouriteSong!): User!
+  downloadSong(url: String!): String!
+  createSong(createSongDto: CreateSongDto!, audio: Upload!, image: Upload!): SongType!
+  deleteSong(id: String!): SongType!
+  recoverSong(id: String!): SongType!
+  createArtist(createArtistDto: CreateArtistDto!, image: Upload!): Artist!
+  deleteArtist(id: String!): Artist!
+  recoverArtist(id: String!): Artist!
+  uploadAudio(file: Upload!): String!
+  deleteImage(imageUrl: String!): Boolean!
+  createNewPlaylist(songId: String!, playlistName: String!, userId: String!): PlaylistType!
+  addSongToPlaylist(playlistId: String!, songId: String!): PlaylistType!
+  createSubscription(price: Float!, userId: String!): String!
+  StripeWebhook: Boolean!
+}
+
+input CreateUserDto {
+  name: String!
+  email: String!
+  password: String!
+  role: UserRole!
+}
+
+input LoginUserDto {
+  inputEmail: String!
+  inputPassword: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input FavouriteSong {
+  userId: String!
+  songId: String!
+}
+
+input CreateSongDto {
+  title: String!
+  artist: ID!
+  genres: [Genres!]!
+  language: Langauge!
+  mood: [SongMood!]!
+}
+
+input CreateArtistDto {
+  name: String!
+  password: String!
+  dateOfBirth: String!
+  genres: [Genres!]!
+  language: Langauge!
+  biography: String!
+}
