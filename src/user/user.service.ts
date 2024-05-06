@@ -134,6 +134,7 @@ export class UserService {
     }
   }
 
+
   async addIdToPlaylist(userId: string, playlistId: string) {
     const updatedUser = await this.UserModel.findOneAndUpdate(
       { _id: userId },

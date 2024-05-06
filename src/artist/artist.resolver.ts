@@ -9,6 +9,7 @@ import {
 import { ArtistType } from './artist.type';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './Dto/create_artist.dto';
+import { CreateUserToArtistDto } from './Dto/createUserToArtist.dto';
 import { Artist } from './artist.schema';
 import { SongService } from 'src/song/song.service';
 import { SongType } from 'src/song/song.type';
@@ -49,6 +50,13 @@ export class ArtistResolver {
     return artist;
   }
 
+  // @Mutation(()=> ArtistType)
+  // async createUserToArtist(
+  //   @Args('createUserToArtist') createUserToArtistDto: CreateUserToArtistDto,
+  // ){
+
+  // }
+ 
   @Mutation(() => ArtistType)
   async deleteArtist(@Args('id') artistId: string) {
     const deletedArtist = await this.artistService.softDeleteArtist(artistId);

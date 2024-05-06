@@ -70,6 +70,7 @@ export class UserResolver {
     @Args('image', { type: () => GraphQLUpload }) image: FileUpload,
     @Args('userId') userId: string,
   ) {
+    console.log(image);
     let imageLink: string;
     try {
       const user = await this.userService.getUserById(userId);
@@ -84,6 +85,21 @@ export class UserResolver {
         await this.cloudinaryService.deleteImageByUrl(imageLink);
       }
       throw new Error(error);
+    }
+  }
+
+  @Mutation(()=> UserType)
+  async storeImageLink(
+    @Args('imageLink') imageLink : string ,
+    @Args('userId') userId : string ,
+  ){
+    console.log(imageLink);
+    console.log(userId)
+    try{
+      const user = await this.userService.updateUserImage(userId , imageLink);
+      return user;
+    }catch{
+      throw new Error('error to store the image ');
     }
   }
 
