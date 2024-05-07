@@ -8,6 +8,7 @@ export class ArtistService {
   constructor(
     @InjectModel(Artist.name) public readonly ArtistModel: Model<Artist>,
   ) {}
+
   async createArtist(artistData, artistImage) {
     const { name, dateOfBirth, biography, genres, language } = artistData;
 
@@ -21,6 +22,20 @@ export class ArtistService {
       imageLink: artistImage,
     });
     return artist;
+  }
+
+  async userToArtist(artistData) {
+    const { name, dateOfBirth, biography, genres, language, imageLink } =
+      artistData;
+    return await this.ArtistModel.create({
+      name,
+      dateOfBirth,
+      biography,
+      genres,
+      language,
+      isActive: true,
+      imageLink,
+    });
   }
 
   async getArtistById(id): Promise<Artist> {
@@ -39,7 +54,6 @@ export class ArtistService {
     });
   }
 
-
   async getArtistsByIds(artistIds) {
     const artists: Artist[] = await Promise.all(
       artistIds.map(async (artistId: string) => {
@@ -49,7 +63,7 @@ export class ArtistService {
     );
     return artists;
   }
-  
+
   async softDeleteArtist(artistId) {
     return await this.ArtistModel.findByIdAndUpdate(artistId, {
       isActive: false,
@@ -70,7 +84,7 @@ export class ArtistService {
 
   async searchArtist(search: string): Promise<Artist[]> {
     const regex = new RegExp(search, 'i');
-    const artists  = await this.ArtistModel.find({ name: regex }).exec();
-    return artists ;
+    const artists = await this.ArtistModel.find({ name: regex }).exec();
+    return artists;
   }
 }

@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { ArtistType } from 'src/artist/artist.type';
 
 @ObjectType()
 export class AuthResponse {
@@ -19,4 +20,10 @@ export class AuthResponse {
 
   @Field()
   profile: string;
+
+  @Field({nullable : true})
+  endDate: Date;
+
+  @Field({ nullable: true })
+  asArtist?: string;
 }

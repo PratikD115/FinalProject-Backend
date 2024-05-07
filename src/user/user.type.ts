@@ -34,9 +34,9 @@ export class UserType {
   @Field()
   profile: string;
 
-  @Field()
+  @Field({nullable : true})
   artistId: ArtistType;
 
-  @Field()
+  @Field({nullable : true})
   subscribe : SubscriptionType;
 }

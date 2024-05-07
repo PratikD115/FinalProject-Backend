@@ -15,6 +15,7 @@ import { SongService } from 'src/song/song.service';
 import { SongType } from 'src/song/song.type';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { UserService } from 'src/user/user.service';
 
 @Resolver(() => ArtistType)
 export class ArtistResolver {
@@ -22,6 +23,7 @@ export class ArtistResolver {
     private artistService: ArtistService,
     private songService: SongService,
     private cloudinaryService: CloudinaryService,
+    private userService: UserService,
   ) {}
 
   @Query(() => ArtistType)
@@ -50,13 +52,16 @@ export class ArtistResolver {
     return artist;
   }
 
-  // @Mutation(()=> ArtistType)
-  // async createUserToArtist(
-  //   @Args('createUserToArtist') createUserToArtistDto: CreateUserToArtistDto,
-  // ){
+  @Mutation(() => ArtistType)
+  async createUserToArtist(
+    @Args('createUserToArtist') createUserToArtistDto: CreateUserToArtistDto,
+  ) {
+    const { userId, ...artistData } = createUserToArtistDto;
+    const artist = await this.artistService.userToArtist(artistData);
+    await this.userService.addAsArtist(userId, artist.id);
+    return artist;
+  }
 
-  // }
- 
   @Mutation(() => ArtistType)
   async deleteArtist(@Args('id') artistId: string) {
     const deletedArtist = await this.artistService.softDeleteArtist(artistId);
