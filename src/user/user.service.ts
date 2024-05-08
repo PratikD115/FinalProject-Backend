@@ -104,8 +104,7 @@ export class UserService {
 
   async getUserById(userId) {
     try {
-      console.log('user');
-      console.log(userId);
+      
       const user = await this.UserModel.findById(userId);
       if (!user) {
         throw new NotFoundException('user not exist!');

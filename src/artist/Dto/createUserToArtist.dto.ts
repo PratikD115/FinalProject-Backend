@@ -11,7 +11,7 @@ export class CreateUserToArtistDto {
   name: string;
 
   @Field()
-  userId : string
+  userId: string;
   // @Field()
   // @MinLength(8)
   // password: string;

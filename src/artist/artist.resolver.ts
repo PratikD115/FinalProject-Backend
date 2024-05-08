@@ -56,6 +56,7 @@ export class ArtistResolver {
   async createUserToArtist(
     @Args('createUserToArtist') createUserToArtistDto: CreateUserToArtistDto,
   ) {
+    console.log(createUserToArtistDto);
     const { userId, ...artistData } = createUserToArtistDto;
     const artist = await this.artistService.userToArtist(artistData);
     await this.userService.addAsArtist(userId, artist.id);

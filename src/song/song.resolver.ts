@@ -41,7 +41,7 @@ export class SongResolver {
 
   @Query(() => [SongType])
   async songsByLanguage(@Args('language') language: string): Promise<Song[]> {
-    console.log('in the langauge resolver ' +  language);
+    console.log('in the language resolver ' +  language);
     // Call the service method to fetch songs by language
     return this.songService.findByLanguage(language);
   }

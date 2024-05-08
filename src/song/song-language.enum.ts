@@ -13,6 +13,6 @@ export enum Language {
 }
 
 registerEnumType(Language, {
-  name: 'Langauge',
+  name: 'language',
   description: 'Possible language for songs',
 });

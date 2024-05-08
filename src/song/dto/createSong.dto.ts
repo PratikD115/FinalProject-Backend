@@ -11,7 +11,7 @@ export class CreateSongDto {
   @IsString()
   title: string;
 
-  @Field(() => ID)
+  @Field()
   artist: string;
 
   @Field(() => [Genres])
