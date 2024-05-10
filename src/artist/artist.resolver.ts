@@ -16,6 +16,7 @@ import { SongType } from 'src/song/song.type';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UserService } from 'src/user/user.service';
+import { Song } from 'src/song/song.schema';
 
 @Resolver(() => ArtistType)
 export class ArtistResolver {
@@ -56,7 +57,6 @@ export class ArtistResolver {
   async createUserToArtist(
     @Args('createUserToArtist') createUserToArtistDto: CreateUserToArtistDto,
   ) {
-    console.log(createUserToArtistDto);
     const { userId, ...artistData } = createUserToArtistDto;
     const artist = await this.artistService.userToArtist(artistData);
     await this.userService.addAsArtist(userId, artist.id);
@@ -64,14 +64,14 @@ export class ArtistResolver {
   }
 
   @Mutation(() => ArtistType)
-  async deleteArtist(@Args('id') artistId: string) {
+  async deleteArtist(@Args('id') artistId: string): Promise<Artist> {
     const deletedArtist = await this.artistService.softDeleteArtist(artistId);
     await this.songService.softDeleteSongsByIds(deletedArtist.songs);
     return deletedArtist;
   }
 
   @Mutation(() => ArtistType)
-  async recoverArtist(@Args('id') artistId: string) {
+  async recoverArtist(@Args('id') artistId: string): Promise<Artist> {
     const recoveredArtist = await this.artistService.recoverArtist(artistId);
     await this.songService.recoverSongsByIds(recoveredArtist.songs);
     return recoveredArtist;
@@ -82,7 +82,7 @@ export class ArtistResolver {
     @Parent() artist: Artist,
     @Args('page') page: number,
     @Args('limit') limit: number,
-  ) {
+  ): Promise<Song[]> {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 

@@ -1,13 +1,15 @@
 // cloudinary.service.ts
 
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary } from 'cloudinary';
 import { FileUpload } from 'graphql-upload';
+
 
 @Injectable()
 export class CloudinaryService {
   constructor() {
-    // Configure Cloudinary with your cloud_name, api_key, and api_secret
+    
     cloudinary.config({
       cloud_name: 'ddiy656zq',
       api_key: '111913981211646',

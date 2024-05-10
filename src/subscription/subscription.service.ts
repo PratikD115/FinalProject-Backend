@@ -4,6 +4,7 @@ import { Subscription } from './subscription.schema';
 import { Model } from 'mongoose';
 import Stripe from 'stripe';
 import { SubscriptionType } from './subscription.type';
+import { User } from 'src/user/user.schema';
 
 @Injectable()
 export class SubscriptionService {
@@ -11,6 +12,7 @@ export class SubscriptionService {
   constructor(
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<Subscription>,
+    @InjectModel(User.name) private readonly userModel: Model<Subscription>,
   ) {
     this.stripe = new Stripe(
       'sk_test_51PBuwgAJIxE0OtQlv14edFnj1KaKpvcQx7VoiJwd3f4cd2o9jRv1b6OUomdvmWh7GKC1rfBplSdRfDavo2hACVjE009jqDePzr',
@@ -20,9 +22,11 @@ export class SubscriptionService {
     );
   }
 
-  async myPaymentServiceStart(user: any, price: number) :Promise<{ sessionURL: string, subscriptionId: string }>{
+  async myPaymentServiceStart(
+    user: any,
+    price: number,
+  ): Promise<{ sessionURL: string; subscriptionId: string }> {
     try {
-      console.log(user);
       // Define plan IDs for different subscription levels
       const [Basic, Standard, Premium] = [
         'price_1PBuyLAJIxE0OtQlXNfZ0THo',
@@ -35,7 +39,7 @@ export class SubscriptionService {
       if (price === 3) planId = Basic;
       if (price === 8) planId = Standard;
       if (price === 29) planId = Premium;
-   
+
       if (price !== 0 && user) {
         // Ensure user exists before accessing its properties
 
@@ -54,27 +58,20 @@ export class SubscriptionService {
           success_url: 'http://localhost:3000',
           cancel_url: 'http://localhost:3000',
         });
-        let month;
-        if (price === 3) month = 1;
-        if (price === 8) month = 3;
-        if (price === 29) month = 12;
-        const startDate = new Date();
 
-        let expireDate = new Date(startDate);
-        expireDate.setMonth(expireDate.getMonth() + month);
         // Create a new subscription and update the user's subscriptions
+
         const subscription = await this.subscriptionModel.create({
           planId: planId,
           price,
           userId: user.id,
-          sessionId: session.url,
-          startDate,
-          expireDate,
-          status: 'complete',
+          sessionId: session.id,
+          startDate: null,
+          expireDate: null,
+          status: 'pending...',
         });
-       
-        return {sessionURL : session.url , subscriptionId : subscription.id} 
-       
+
+        return { sessionURL: session.url, subscriptionId: subscription.id };
       }
     } catch (error) {
       // Catch any errors and throw a NotFoundException
@@ -85,55 +82,39 @@ export class SubscriptionService {
   async getSubscriptionById(subscribeId: SubscriptionType | string) {
     return await this.subscriptionModel.findById(subscribeId);
   }
+
   async handleStripeWebhook(
     event: any,
   ): Promise<{ status: string; message?: string }> {
     try {
-      console.log('event is ' + event);
-      // Handle specific events
+      const paymentIntent = event.data.object;
+
       switch (event.type.toString()) {
         case 'checkout.session.completed':
-          const paymentIntent = event.data.object;
-          console.log(paymentIntent);
-          // Handle payment success logic here
-          // const currentUser = await this.userModel.findById(
-          //   paymentIntent.client_reference_id,
-          // );
-          // const subscriptionDataStore = await this.subscriptionService.findById(
-          //   currentUser.subscriptions,
-          // );
-          // // Get the current date
-          // const currentDate = new Date();
+          const clientId = event.data.object.client_reference_id;
+          const user: User = await this.userModel.findById(clientId);
+        
+          const sub = await this.subscriptionModel.findById(
+            user.subscribe.toString(),
+          );
 
-          // // Add month to the current date
+          let month = 1;
+          if (sub.price === '3') month = 1;
+          if (sub.price === '8') month = 3;
+          if (sub.price === '29') month = 12;
+          const startDate = new Date();
 
-          // let futureDate;
-          // if (subscriptionDataStore.planType === 'Basic') {
-          //   futureDate = new Date(
-          //     currentDate.getTime() + 30 * 24 * 60 * 60 * 1000,
-          //   );
-          // } else if (subscriptionDataStore.planType === 'Standard') {
-          //   futureDate = new Date(
-          //     currentDate.getTime() + 90 * 24 * 60 * 60 * 1000,
-          //   );
-          // } else if (subscriptionDataStore.planType === 'Premium') {
-          //   futureDate = new Date(
-          //     currentDate.getTime() + 361 * 24 * 60 * 60 * 1000,
-          //   );
-          // }
-
-          // if (subscriptionDataStore) {
-          //   const updatedSubscription = {
-          //     ...subscriptionDataStore._doc,
-          //     planStartDate: paymentIntent.created,
-          //     planEndDate: futureDate,
-          //     planStatus: paymentIntent.payment_status,
-          //   };
-          //   await this.subscriptionService.updateSubscription(
-          //     currentUser.subscriptions,
-          //     updatedSubscription,
-          //   );
-          // }
+          let expireDate = new Date(startDate);
+          expireDate.setMonth(expireDate.getMonth() + month);
+          const updatedSub = await this.subscriptionModel.findByIdAndUpdate(
+            sub.id,
+            {
+              status: 'done',
+              startDate,
+              expireDate,
+            },
+            { new: true },
+          );
           break;
         case 'payment_intent.payment_failed':
           // const failedPaymentIntent = event.data.object;

@@ -15,7 +15,7 @@ import { ArtistService } from 'src/artist/artist.service';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import fetch from 'node-fetch';
-
+import { CreateSongLinkDto } from './dto/createSongLink.dto';
 
 @Resolver(() => SongType)
 export class SongResolver {
@@ -41,19 +41,17 @@ export class SongResolver {
 
   @Query(() => [SongType])
   async songsByLanguage(@Args('language') language: string): Promise<Song[]> {
-    console.log('in the language resolver ' +  language);
+    console.log('in the language resolver ' + language);
     // Call the service method to fetch songs by language
     return this.songService.findByLanguage(language);
   }
 
   @Mutation(() => String)
   async downloadSong(@Args('url') url: string) {
-    
-      
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const base64String = Buffer.from(arrayBuffer).toString('base64');
-      return base64String;
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const base64String = Buffer.from(arrayBuffer).toString('base64');
+    return base64String;
   }
 
   @Mutation(() => SongType)
@@ -78,6 +76,22 @@ export class SongResolver {
       streamingLink,
       imageLink,
     );
+    await this.artistService.addSongIdToArtist(savedSong.artist, savedSong.id);
+    return savedSong;
+  }
+
+  @Mutation(() => SongType)
+  async createSongLink(
+    @Args('createSongLinkDto') createSongLinkDto: CreateSongLinkDto,
+  ) {
+    console.log(createSongLinkDto);
+    const { imageLink, streamingLink, ...details } = createSongLinkDto;
+    const savedSong = await this.songService.createSong(
+      details,
+      streamingLink,
+      imageLink,
+    );
+
     await this.artistService.addSongIdToArtist(savedSong.artist, savedSong.id);
     return savedSong;
   }

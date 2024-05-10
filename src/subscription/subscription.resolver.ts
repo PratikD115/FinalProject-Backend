@@ -12,7 +12,7 @@ import { UserType } from 'src/user/user.type';
 import { Subscription } from './subscription.schema';
 import { SubscriptionType } from './subscription.type';
 
-@Resolver(()=> SubscriptionType)
+@Resolver(() => SubscriptionType)
 export class SubscriptionResolver {
   constructor(
     private subscriptionService: SubscriptionService,
@@ -24,17 +24,16 @@ export class SubscriptionResolver {
     @Args('price') price: number,
     @Args('userId') userId: string,
   ) {
-    
     const user = await this.userService.getUserById(userId);
 
     // Call the Stripe service to create a subscription
-    const {sessionURL, subscriptionId }  = await this.subscriptionService.myPaymentServiceStart (
-      user,
-      price,
+    const { sessionURL, subscriptionId } =
+      await this.subscriptionService.myPaymentServiceStart(user, price);
+
+    const updatedUser = await this.userService.addSubscription(
+      userId,
+      subscriptionId,
     );
-    
-    const updatedUser = this.userService.addSubscription(userId, subscriptionId);
-    // const updatedUser = await this.userService.addSubscription()
     return sessionURL;
   }
   @Mutation(() => Boolean)

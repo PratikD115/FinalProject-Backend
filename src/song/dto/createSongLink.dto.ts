@@ -5,7 +5,7 @@ import { SongMood } from '../song-mood.enum';
 import { IsString } from 'class-validator';
 
 @InputType()
-export class CreateSongDto {
+export class CreateSongLinkDto {
   @Field()
   @IsString()
   title: string;
@@ -21,4 +21,10 @@ export class CreateSongDto {
 
   @Field(() => [SongMood])
   mood: SongMood[];
+
+  @Field()
+  streamingLink: string;
+
+  @Field()
+  imageLink: string;
 }

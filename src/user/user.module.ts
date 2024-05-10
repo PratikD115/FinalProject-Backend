@@ -20,7 +20,7 @@ import { SubscriptionModule } from 'src/subscription/subscription.module';
     CloudinaryModule,
     SubscriptionModule
   ],
-  providers: [UserResolver, UserService],
+  providers: [UserResolver, UserService ],
   exports: [UserService],
 })
 export class UserModule {}
