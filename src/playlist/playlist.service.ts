@@ -19,7 +19,7 @@ export class PlaylistService {
       user: userId,
       songs: songId,
     });
-    console.log(newPlaylist.user);
+   
     return await newPlaylist.save();
   }
 

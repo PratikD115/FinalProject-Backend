@@ -87,13 +87,11 @@ export class SubscriptionService {
     event: any,
   ): Promise<{ status: string; message?: string }> {
     try {
-      const paymentIntent = event.data.object;
-
       switch (event.type.toString()) {
         case 'checkout.session.completed':
           const clientId = event.data.object.client_reference_id;
           const user: User = await this.userModel.findById(clientId);
-        
+
           const sub = await this.subscriptionModel.findById(
             user.subscribe.toString(),
           );
@@ -104,9 +102,9 @@ export class SubscriptionService {
           if (sub.price === '29') month = 12;
           const startDate = new Date();
 
-          let expireDate = new Date(startDate);
+          const expireDate = new Date(startDate);
           expireDate.setMonth(expireDate.getMonth() + month);
-          const updatedSub = await this.subscriptionModel.findByIdAndUpdate(
+          await this.subscriptionModel.findByIdAndUpdate(
             sub.id,
             {
               status: 'done',

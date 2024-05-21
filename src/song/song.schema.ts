@@ -18,6 +18,9 @@ export class Song extends Document {
   @Prop()
   isActive: boolean;
 
+  @Prop()
+  likes: number;
+
   @Prop({ type: String, enum: Language, default: Language.other })
   language: Language;
 

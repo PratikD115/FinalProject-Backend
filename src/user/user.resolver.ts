@@ -70,7 +70,6 @@ export class UserResolver {
     @Args('image', { type: () => GraphQLUpload }) image: FileUpload,
     @Args('userId') userId: string,
   ) {
-    console.log(image);
     let imageLink: string;
     try {
       const user = await this.userService.getUserById(userId);
@@ -93,8 +92,7 @@ export class UserResolver {
     @Args('imageLink') imageLink : string ,
     @Args('userId') userId : string ,
   ){
-    console.log(imageLink);
-    console.log(userId)
+   
     try{
       const user = await this.userService.updateUserImage(userId , imageLink);
       return user;
@@ -111,6 +109,8 @@ export class UserResolver {
     return await this.userService.addArtistToUser(userId, artistId);
   }
 
+
+
   @Mutation(() => UserType)
   async removeArtistToUser(
     @Args('userId') userId: string,
@@ -124,7 +124,8 @@ export class UserResolver {
     @Args('addSongToFavourite') addSongToFavourite: FavouriteSong,
   ) {
     try {
-      return this.userService.addToFavourite(addSongToFavourite);
+      this.songService.likeIncrement(addSongToFavourite.songId);
+      return this.userService.addToFavourite(addSongToFavourite);     
     } catch (error) {
       throw new Error('failed to add the song in the favourite');
     }
@@ -135,6 +136,7 @@ export class UserResolver {
     @Args('removeSongToFavourite') removeSongToFavourite: FavouriteSong,
   ) {
     try {
+      this.songService.likeDecrement(removeSongToFavourite.songId);
       return this.userService.removeToFavourite(removeSongToFavourite);
     } catch (error) {
       throw new Error('failed to remove the song in the favourite');

@@ -76,7 +76,6 @@ export class UserService {
     return user;
   }
   async addArtistToUser(userId: string, artistId: string) {
-    console.log(userId, artistId);
     const user = await this.UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { follow: artistId } },

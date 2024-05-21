@@ -41,9 +41,15 @@ export class SongResolver {
 
   @Query(() => [SongType])
   async songsByLanguage(@Args('language') language: string): Promise<Song[]> {
-    console.log('in the language resolver ' + language);
-    // Call the service method to fetch songs by language
+    
+   
     return this.songService.findByLanguage(language);
+  }
+
+  @Query(() => [SongType])
+  async mostLikedSong() {
+   
+    return await this.songService.getMostLikedSong();
   }
 
   @Mutation(() => String)
@@ -84,7 +90,7 @@ export class SongResolver {
   async createSongLink(
     @Args('createSongLinkDto') createSongLinkDto: CreateSongLinkDto,
   ) {
-    console.log(createSongLinkDto);
+   
     const { imageLink, streamingLink, ...details } = createSongLinkDto;
     const savedSong = await this.songService.createSong(
       details,

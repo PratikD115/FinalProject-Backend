@@ -29,10 +29,27 @@ export class SongService {
   }
 
   async findByLanguage(language: string): Promise<Song[]> {
-    console.log('in the service ' + language);
     return this.songModel.find({ language });
   }
 
+  async likeIncrement(songId: string) {
+    await this.songModel.findByIdAndUpdate(
+      songId,
+      { $inc: { likes: 1 } },
+      { new: true },
+    );
+  }
+  async likeDecrement(songId: string) {
+    await this.songModel.findByIdAndUpdate(
+      songId,
+      { $inc: { likes: -1 } },
+      { new: true },
+    );
+  }
+
+  async getMostLikedSong() {
+    return await this.songModel.find().sort({ likes: -1 }).limit(7);
+  }
   async searchSong(search: string): Promise<Song[]> {
     const regex = new RegExp(search, 'i');
     const songs = await this.songModel.find({ title: regex }).exec();

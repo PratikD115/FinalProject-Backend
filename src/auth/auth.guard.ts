@@ -31,7 +31,7 @@ export class JwtAuthGuard implements CanActivate {
       });
 
       req.user = payload;
-      console.log('payload' + payload);
+    
     } catch {
       throw new UnauthorizedException('Invalid token');
     }

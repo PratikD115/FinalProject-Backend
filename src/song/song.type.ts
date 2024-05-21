@@ -20,6 +20,9 @@ export class SongType {
 
   @Field()
   isActive: boolean;
+  
+  @Field()
+  likes: number;
 
   @Field(() => Language)
   language: Language;
