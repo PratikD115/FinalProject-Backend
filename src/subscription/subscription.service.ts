@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import Stripe from 'stripe';
 import { SubscriptionType } from './subscription.type';
 import { User } from 'src/user/user.schema';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SubscriptionService {
@@ -12,10 +13,11 @@ export class SubscriptionService {
   constructor(
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<Subscription>,
+    private configService: ConfigService,
     @InjectModel(User.name) private readonly userModel: Model<Subscription>,
   ) {
     this.stripe = new Stripe(
-      'sk_test_51PBuwgAJIxE0OtQlv14edFnj1KaKpvcQx7VoiJwd3f4cd2o9jRv1b6OUomdvmWh7GKC1rfBplSdRfDavo2hACVjE009jqDePzr',
+      this.configService.get<string>('STRIPE_PRIVATE_KEY'),
       {
         apiVersion: '2024-04-10',
       },

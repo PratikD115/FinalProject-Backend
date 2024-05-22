@@ -22,10 +22,10 @@ export class UserType {
   @Field(() => UserRole)
   role: UserRole;
 
-  @Field(() => [SongType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
+  @Field(() => [SongType], { nullable: true }) 
   favourite?: SongType[];
 
-  @Field(() => [ArtistType], { nullable: true }) // Assuming SongType is another GraphQL object representing songs
+  @Field(() => [ArtistType], { nullable: true }) 
   follow?: ArtistType[];
 
   @Field(() => [PlaylistType], { nullable: true })

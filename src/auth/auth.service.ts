@@ -10,7 +10,6 @@ import { ConfigService } from '@nestjs/config';
 import { AuthResponse } from './auth.type';
 import { SubscriptionService } from 'src/subscription/subscription.service';
 import { ArtistService } from 'src/artist/artist.service';
-import { ResolveField } from '@nestjs/graphql';
 
 @Injectable()
 export class AuthService {
@@ -51,7 +50,7 @@ export class AuthService {
 
     const subscription =
       await this.subscriptionService.getSubscriptionById(subscribe);
-let asArtist;
+    let asArtist;
     if (artistId) {
       asArtist = artistId.toString();
     }
@@ -63,7 +62,7 @@ let asArtist;
       role,
       profile,
       endDate: subscription?.expireDate,
-      asArtist
+      asArtist,
     };
   }
 }

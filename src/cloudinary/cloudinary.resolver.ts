@@ -1,12 +1,13 @@
-// cloudinary.resolver.ts
-
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CloudinaryService } from './cloudinary.service';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 
 @Resolver()
 export class CloudinaryResolver {
-  constructor(private readonly cloudinaryService: CloudinaryService) {}
+  constructor(
+    private readonly cloudinaryService: CloudinaryService,
+ 
+  ) {}
 
   @Mutation(() => String)
   async uploadAudio(

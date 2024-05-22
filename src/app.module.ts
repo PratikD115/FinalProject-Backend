@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config'; // Import ConfigService for factory function
+import { ConfigModule, ConfigService } from '@nestjs/config'; // Import ConfigService for factory function
 import { graphqlUploadExpress } from 'graphql-upload';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -16,10 +16,14 @@ import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }), // Load environment variables
-    MongooseModule.forRoot(
-      'mongodb+srv://pratik:pratikd98@mernapp.gm42n80.mongodb.net/',
-    ),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       playground: true,

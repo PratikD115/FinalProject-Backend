@@ -30,7 +30,7 @@ export class SubscriptionResolver {
     const { sessionURL, subscriptionId } =
       await this.subscriptionService.myPaymentServiceStart(user, price);
 
-    const updatedUser = await this.userService.addSubscription(
+    await this.userService.addSubscription(
       userId,
       subscriptionId,
     );
