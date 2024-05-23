@@ -82,6 +82,19 @@ export class ArtistService {
     });
   }
 
+  async addUserIdToFollower(userId, artistId) {
+    console.log('addUserIdToFollower');
+    await this.ArtistModel.findByIdAndUpdate(artistId, {
+      $addToSet: { follower: userId },
+    });
+  }
+
+  async removeUserIdToFollower(userId, artistId){
+    await this.ArtistModel.findByIdAndUpdate(artistId, {
+      $pull: { follower: userId },
+    });
+  }
+
   async searchArtist(search: string): Promise<Artist[]> {
     const regex = new RegExp(search, 'i');
     const artists = await this.ArtistModel.find({ name: regex }).exec();
