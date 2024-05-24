@@ -56,8 +56,8 @@ export class SongResolver {
   async downloadSong(@Args('url') url: string) {
     const response = await fetch(url);
     const arrayBuffer = await response.arrayBuffer();
-    const base64String = Buffer.from(arrayBuffer).toString('base64');
-    return base64String;
+    return Buffer.from(arrayBuffer).toString('base64');
+    
   }
 
   @Mutation(() => SongType)

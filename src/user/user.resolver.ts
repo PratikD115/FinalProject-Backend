@@ -37,32 +37,20 @@ export class UserResolver {
   @Query(() => [UserType])
   @UseGuards(JwtAuthGuard)
   getuser() {
-    try {
-      return this.userService.getAllUser();
-    } catch (error) {
-      throw new Error(error);
-    }
+    return this.userService.getAllUser();
   }
 
   @Query(() => [SongType])
   async getFavouriteSongs(@Args('userId') userId: string) {
-    try {
-      const user = await this.userService.getUserById(userId);
-      const songs = await this.songService.getSongsByIds(user.favourite);
-
-      return songs;
-    } catch (error) {
-      throw new Error(error);
-    }
+    if (!userId) throw new NotFoundException('please enter userId');
+    const user = await this.userService.getUserById(userId);
+    return await this.songService.getSongsByIds(user.favourite);
   }
 
   @Query(() => UserType)
   async getUserById(@Args('userId') userId: string) {
-    try {
-      return await this.userService.getUserById(userId);
-    } catch (error) {
-      throw new Error(error);
-    }
+    if (!userId) throw new NotFoundException('please enter userId');
+    return await this.userService.getUserById(userId);
   }
 
   @Mutation(() => UserType)
@@ -92,12 +80,7 @@ export class UserResolver {
     @Args('imageLink') imageLink: string,
     @Args('userId') userId: string,
   ) {
-    try {
-      const user = await this.userService.updateUserImage(userId, imageLink);
-      return user;
-    } catch {
-      throw new Error('error to store the image ');
-    }
+    return await this.userService.updateUserImage(userId, imageLink);
   }
 
   @Mutation(() => UserType)
@@ -105,11 +88,7 @@ export class UserResolver {
     @Args('userId') userId: string,
     @Args('artistId') artistId: string,
   ) {
-    console.log('adding artist to user');
-    //add the userId to artist document
     await this.artistService.addUserIdToFollower(userId, artistId);
-
-    //add artistid in the user document
     return await this.userService.addArtistToUser(userId, artistId);
   }
 
@@ -126,33 +105,21 @@ export class UserResolver {
   addToFavourite(
     @Args('addSongToFavourite') addSongToFavourite: FavouriteSong,
   ) {
-    try {
-      this.songService.likeIncrement(addSongToFavourite.songId);
-      return this.userService.addToFavourite(addSongToFavourite);
-    } catch (error) {
-      throw new Error('failed to add the song in the favourite');
-    }
+    this.songService.likeIncrement(addSongToFavourite.songId);
+    return this.userService.addToFavourite(addSongToFavourite);
   }
 
   @Mutation(() => UserType)
   removeToFavourite(
     @Args('removeSongToFavourite') removeSongToFavourite: FavouriteSong,
   ) {
-    try {
-      this.songService.likeDecrement(removeSongToFavourite.songId);
-      return this.userService.removeToFavourite(removeSongToFavourite);
-    } catch (error) {
-      throw new Error('failed to remove the song in the favourite');
-    }
+    this.songService.likeDecrement(removeSongToFavourite.songId);
+    return this.userService.removeToFavourite(removeSongToFavourite);
   }
 
   @ResolveField(() => [SongType])
   async favourite(@Parent() user: User) {
-    try {
-      return this.songService.getSongsByIds(user.favourite);
-    } catch (error) {
-      throw new Error('failed to fetch the songs');
-    }
+    return this.songService.getSongsByIds(user.favourite);
   }
 
   @ResolveField(() => ArtistType)
@@ -167,7 +134,7 @@ export class UserResolver {
   @ResolveField(() => ArtistType)
   async follow(@Parent() user: User) {
     try {
-      return this.artistService.getArtistsByIds(user.follow);
+      return await this.artistService.getArtistsByIds(user.follow);
     } catch (error) {
       throw new Error(error);
     }
@@ -175,11 +142,7 @@ export class UserResolver {
 
   @ResolveField(() => [PlaylistType])
   async playlist(@Parent() user: User) {
-    try {
-      return this.playlistService.getPlaylistByIds(user.playlist);
-    } catch (error) {
-      throw new Error(error);
-    }
+    return this.playlistService.getPlaylistByIds(user.playlist);
   }
 
   @ResolveField(() => SubscriptionType)

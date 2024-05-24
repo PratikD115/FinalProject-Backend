@@ -21,6 +21,8 @@ export class PlaylistResolver {
     private songService: SongService,
     private userService: UserService,
   ) {}
+
+  
   @Mutation(() => PlaylistType)
   async createNewPlaylist(
     @Args('songId') songId: string,
@@ -43,8 +45,6 @@ export class PlaylistResolver {
     @Args('playlistId') playlistId: string,
     @Args('songId') songId: string,
   ) {
-    
-
     return await this.playlistService.addSongToPlaylist(playlistId, songId);
   }
 

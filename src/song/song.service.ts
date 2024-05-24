@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Song } from './song.schema';
@@ -48,12 +44,20 @@ export class SongService {
   }
 
   async getMostLikedSong() {
-    return await this.songModel.find().sort({ likes: -1 }).limit(7);
+    try {
+      return await this.songModel.find().sort({ likes: -1 }).limit(7);
+    } catch {
+      throw new Error('failed to fetch the most liked song');
+    }
   }
+
   async searchSong(search: string): Promise<Song[]> {
-    const regex = new RegExp(search, 'i');
-    const songs = await this.songModel.find({ title: regex }).exec();
-    return songs;
+    try {
+      const regex = new RegExp(search, 'i');
+      return await this.songModel.find({ title: regex }).exec();
+    } catch {
+      throw new Error('failed to search the songs');
+    }
   }
 
   async getSongById(songId) {
@@ -66,58 +70,81 @@ export class SongService {
         throw new NotFoundException('There is no song with this id');
       }
       return song;
-    } catch (error) {
-      throw new InternalServerErrorException('An unexpected error occurred');
+    } catch {
+      throw new Error('failed to get the song');
     }
   }
 
   async findSongByArtistId(artistId: string): Promise<Song[]> {
-    const songs = await this.songModel.find({ artist: artistId }).exec();
-    return songs;
+    try {
+      return await this.songModel.find({ artist: artistId });
+    } catch {
+      throw new Error('failed to find the songs by artistId');
+    }
   }
 
   async softDeleteSong(songId: string) {
-    await this.songModel.findByIdAndUpdate(songId, { isActive: false });
-    return this.songModel.findById(songId);
+    try {
+      await this.songModel.findByIdAndUpdate(songId, { isActive: false });
+      return await this.songModel.findById(songId);
+    } catch {
+      throw new Error('failed to delete the song');
+    }
   }
 
   async recoverSong(songId: string) {
-    await this.songModel.findByIdAndUpdate(songId, { isActive: true });
-    return this.songModel.findById(songId);
+    try {
+      await this.songModel.findByIdAndUpdate(songId, { isActive: true });
+      return await this.songModel.findById(songId);
+    } catch {
+      throw new Error('failed to recover the song');
+    }
   }
 
   async getAllActiveSongs(page: number, limit: number) {
     const offset = (page - 1) * limit;
-    const activeSong = await this.songModel
-      .find({ isActive: true })
-      .skip(offset)
-      .limit(limit);
-
-    return activeSong;
+    try {
+      return await this.songModel
+        .find({ isActive: true })
+        .skip(offset)
+        .limit(limit);
+    } catch {
+      throw new Error('failed to fetch all active songs');
+    }
   }
 
   async softDeleteSongsByIds(songIds) {
-    const updatedSongs = await this.songModel
-      .updateMany({ _id: { $in: songIds } }, { $set: { isActive: false } })
-      .exec();
-    return updatedSongs;
+    try {
+      return await this.songModel.updateMany(
+        { _id: { $in: songIds } },
+        { $set: { isActive: false } },
+      );
+    } catch {
+      throw new Error('failed to delete the songs by songIds');
+    }
   }
 
   async recoverSongsByIds(songIds) {
-    const updatedSongs = await this.songModel
-      .updateMany({ _id: { $in: songIds } }, { $set: { isActive: true } })
-      .exec();
-
-    return updatedSongs;
+    try {
+      return await this.songModel.updateMany(
+        { _id: { $in: songIds } },
+        { $set: { isActive: true } },
+      );
+    } catch {
+      throw new Error('failed to recover the songs by songIds');
+    }
   }
 
   async getSongsByIds(songIds) {
-    const songs: Song[] = await Promise.all(
-      songIds.map(async (songId: string) => {
-        const song: Song = await this.getSongById(songId);
-        return song;
-      }),
-    );
-    return songs;
+    try {
+      return await Promise.all(
+        songIds.map(async (songId: string) => {
+          const song: Song = await this.getSongById(songId);
+          return song;
+        }),
+      );
+    } catch {
+      throw new Error('failed to fetch songs by songIds');
+    }
   }
 }

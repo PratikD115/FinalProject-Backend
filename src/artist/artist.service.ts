@@ -74,7 +74,7 @@ export class ArtistService {
 
   async getArtistsByIds(artistIds) {
     try {
-      await Promise.all(
+      return await Promise.all(
         artistIds.map(async (artistId: string) => {
           const artist: Artist = await this.getArtistById(artistId);
           return artist;
@@ -116,16 +116,23 @@ export class ArtistService {
   }
 
   async addUserIdToFollower(userId, artistId) {
-    console.log('addUserIdToFollower');
-    await this.ArtistModel.findByIdAndUpdate(artistId, {
-      $addToSet: { follower: userId },
-    });
+    try {
+      await this.ArtistModel.findByIdAndUpdate(artistId, {
+        $addToSet: { follower: userId },
+      });
+    } catch {
+      throw new Error('failed to add the userId to follower');
+    }
   }
 
-  async removeUserIdToFollower(userId, artistId){
-    await this.ArtistModel.findByIdAndUpdate(artistId, {
-      $pull: { follower: userId },
-    });
+  async removeUserIdToFollower(userId, artistId) {
+    try {
+      await this.ArtistModel.findByIdAndUpdate(artistId, {
+        $pull: { follower: userId },
+      });
+    } catch {
+      throw new Error('failed to remove the userId from follower');
+    }
   }
 
   async searchArtist(search: string): Promise<Artist[]> {

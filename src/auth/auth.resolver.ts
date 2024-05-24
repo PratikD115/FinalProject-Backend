@@ -28,11 +28,6 @@ export class AuthResolver {
   async login(
     @Args('loginUserDto') loginUserDto: LoginUserDto,
   ): Promise<{ token: string }> {
-  
-    const token = await this.authService.login(loginUserDto);
-   
-    return   token;
+    return await this.authService.login(loginUserDto);
   }
-
-  
 }

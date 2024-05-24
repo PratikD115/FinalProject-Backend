@@ -6,32 +6,32 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { AuthResponse } from './auth.type';
 import { SubscriptionService } from 'src/subscription/subscription.service';
-import { ArtistService } from 'src/artist/artist.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private configService: ConfigService,
     private subscriptionService: SubscriptionService,
-    private artistService: ArtistService,
   ) {}
 
   async createNewUser(name, email, password, role) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await this.userService.UserModel.create({
-      name,
-      email,
-      role,
-      password: hashedPassword,
-      profile:
-        'https://res.cloudinary.com/ddiy656zq/image/upload/v1714641226/user-Image/aprkhw2lucaachvg1ojs.png',
-    });
-    return user;
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const profile =
+        'https://res.cloudinary.com/ddiy656zq/image/upload/v1716542299/user-Image/zwlfdm20xcfdqbvt32ue.png';
+      return await this.userService.UserModel.create({
+        name,
+        email,
+        role,
+        password: hashedPassword,
+        profile, // default profile imageLink
+      });
+    } catch {
+      throw new Error('failed to create the Signing user account');
+    }
   }
 
   async login({ inputEmail, inputPassword }): Promise<AuthResponse> {
@@ -41,28 +41,32 @@ export class AuthService {
     }
     const isValid = await bcrypt.compare(inputPassword, user.password);
     if (!isValid) {
-      throw new UnauthorizedException('please enter the valid creadentials');
+      throw new UnauthorizedException('Please enter the valid creadentials');
     }
+    try {
+      const payload = { userId: user.id, role: user.role };
+      const token = this.jwtService.sign(payload);
 
-    const payload = { userId: user.id, role: user.role };
-    const token = this.jwtService.sign(payload);
-    const { id, name, email, role, profile, subscribe, artistId } = user;
+      const { id, name, email, role, profile, subscribe, artistId } = user;
 
-    const subscription =
-      await this.subscriptionService.getSubscriptionById(subscribe);
-    let asArtist;
-    if (artistId) {
-      asArtist = artistId.toString();
+      const subscription =
+        await this.subscriptionService.getSubscriptionById(subscribe);
+      let asArtist;
+      if (artistId) {
+        asArtist = artistId.toString();  //convert objectiId to string 
+      }
+      return {
+        token,
+        id,
+        name,
+        email,
+        role,
+        profile,
+        endDate: subscription?.expireDate,
+        asArtist,
+      };
+    } catch {
+      throw new Error('failed to logIn the user');
     }
-    return {
-      token,
-      id,
-      name,
-      email,
-      role,
-      profile,
-      endDate: subscription?.expireDate,
-      asArtist,
-    };
   }
 }

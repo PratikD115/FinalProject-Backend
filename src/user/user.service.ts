@@ -12,7 +12,7 @@ export class UserService {
       const users = await this.UserModel.find();
 
       if (!users) {
-        throw new NotFoundException('user not exist');
+        throw new NotFoundException('user is not exist');
       }
       return users;
     } catch (error) {
@@ -23,8 +23,8 @@ export class UserService {
   async getUserByEmail(email: string): Promise<User> {
     try {
       return await this.UserModel.findOne({ email });
-    } catch (error) {
-      throw new Error(error);
+    } catch {
+      throw new Error('failed to fetch the user by email');
     }
   }
 
@@ -34,9 +34,6 @@ export class UserService {
         $addToSet: { favourite: songId },
       });
 
-      if (!user) {
-        throw new NotFoundException('user is not exist');
-      }
       return user;
     } catch (error) {
       throw new Error('failed to add song to Favourite');
@@ -59,21 +56,31 @@ export class UserService {
   }
 
   async addSubscription(userId: string, subscriptionId: string) {
-    const user = await this.UserModel.findByIdAndUpdate(
-      userId,
-      { subscribe: subscriptionId },
-      { new: true },
-    );
-    return user;
+    try {
+      const user = await this.UserModel.findByIdAndUpdate(
+        userId,
+        { subscribe: subscriptionId },
+        { new: true },
+      );
+      if (!user) {
+        throw new NotFoundException('user is not exist');
+      }
+    } catch {
+      throw new Error('failed to add subscription to user');
+    }
   }
 
   async addAsArtist(userId: string, artistId: string) {
-    const user = await this.UserModel.findByIdAndUpdate(
-      userId,
-      { artistId },
-      { new: true },
-    );
-    return user;
+    try {
+      const user = await this.UserModel.findByIdAndUpdate(
+        userId,
+        { artistId },
+        { new: true },
+      );
+      if (!user) throw new NotFoundException('user is not exist');
+    } catch {
+      throw new Error('failed to add artistId to user');
+    }
   }
   async addArtistToUser(userId: string, artistId: string) {
     const user = await this.UserModel.findByIdAndUpdate(
@@ -83,30 +90,32 @@ export class UserService {
     );
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User is not exist');
     }
     return user;
   }
   async removeArtistToUser(userId: string, artistId: string) {
-    const user = await this.UserModel.findByIdAndUpdate(
-      userId,
-      { $pull: { follow: artistId } },
-      { new: true },
-    );
+    try {
+      const user = await this.UserModel.findByIdAndUpdate(
+        userId,
+        { $pull: { follow: artistId } },
+        { new: true },
+      );
 
-    if (!user) {
-      throw new NotFoundException('User not found');
+      if (!user) {
+        throw new NotFoundException('User is not exist');
+      }
+      return user;
+    } catch {
+      throw new Error('failed to remove artistId from user followers');
     }
-    return user;
   }
-
 
   async getUserById(userId) {
     try {
-      
       const user = await this.UserModel.findById(userId);
       if (!user) {
-        throw new NotFoundException('user not exist!');
+        throw new NotFoundException('user is not exist');
       }
       return user;
     } catch (error) {
@@ -123,23 +132,27 @@ export class UserService {
       );
 
       if (!updatedUser) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('User is not exist');
       }
 
       return updatedUser;
     } catch (error) {
-      throw new Error('Failed to update user image');
+      throw new Error('failed to update user image');
     }
   }
 
-
   async addIdToPlaylist(userId: string, playlistId: string) {
-    const updatedUser = await this.UserModel.findOneAndUpdate(
-      { _id: userId },
-      { $addToSet: { playlist: playlistId } },
-      { new: true },
-    );
+    try {
+      const user = await this.UserModel.findOneAndUpdate(
+        { _id: userId },
+        { $addToSet: { playlist: playlistId } },
+        { new: true },
+      );
 
-    return updatedUser;
+      if (!user) throw new NotFoundException('User is not exist');
+      return user;
+    } catch {
+      throw new Error('failed to add playlistId in user ');
+    }
   }
 }

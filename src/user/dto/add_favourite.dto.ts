@@ -1,13 +1,13 @@
 import { Field, InputType } from '@nestjs/graphql';
-
+import { IsNotEmpty } from 'class-validator';
 
 @InputType()
-export class FavouriteSong { 
+export class FavouriteSong {
+  @Field()
+  @IsNotEmpty()
+  userId: string;
 
-    @Field()
-    userId: string 
-    
-    @Field()
-    songId : string 
+  @Field()
+  @IsNotEmpty()
+  songId: string;
 }
-

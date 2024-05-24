@@ -10,20 +10,20 @@ import { UserRole } from '../user-role.enum';
 @InputType()
 export class CreateUserDto {
   @Field()
-  @IsNotEmpty()
-  @IsString()
+  @IsString({ message: 'please enter a valid user name' })
   name: string;
 
   @Field()
-  @IsEmail()
+  @IsEmail({}, { message: 'valid email' })
   @IsNotEmpty()
   email: string;
 
   @Field()
   @IsNotEmpty()
   @IsStrongPassword()
+  @IsString()
   password: string;
 
-  @Field(()=> UserRole)
+  @Field(() => UserRole)
   role: UserRole;
 }

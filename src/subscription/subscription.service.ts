@@ -82,7 +82,11 @@ export class SubscriptionService {
   }
 
   async getSubscriptionById(subscribeId: SubscriptionType | string) {
-    return await this.subscriptionModel.findById(subscribeId);
+    try {
+      return await this.subscriptionModel.findById(subscribeId);
+    } catch {
+      throw new Error('failed to get subscription');
+    }
   }
 
   async handleStripeWebhook(
