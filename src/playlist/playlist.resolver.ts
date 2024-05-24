@@ -22,7 +22,6 @@ export class PlaylistResolver {
     private userService: UserService,
   ) {}
 
-  
   @Mutation(() => PlaylistType)
   async createNewPlaylist(
     @Args('songId') songId: string,
@@ -36,7 +35,17 @@ export class PlaylistResolver {
       userId,
       playlistName,
     );
-    this.userService.addIdToPlaylist(userId, playlist.id);
+    this.userService.addPlaylistIdToUser(userId, playlist.id);
+    return playlist;
+  }
+
+  @Mutation(() => PlaylistType)
+  async deletePlaylist(@Args('playlistId') playlistId: string) {
+    const playlist = await this.playlistService.deletePlaylist(playlistId);
+    this.userService.removePlaylistIdToUser(
+      playlist.user.toString(),
+      playlist.id,
+    );
     return playlist;
   }
 

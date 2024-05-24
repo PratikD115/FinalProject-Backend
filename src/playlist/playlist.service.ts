@@ -48,6 +48,14 @@ export class PlaylistService {
     }
   }
 
+  async deletePlaylist(playlistId: string) {
+    console.log('enter in to delete the palylist');
+    try {
+      return await this.PlaylistModel.findByIdAndDelete(playlistId);
+    } catch {
+      throw new Error('failed to delete the playlist');
+    }
+  }
   async getPlaylistByIds(playlistIds) {
     try {
       return await Promise.all(

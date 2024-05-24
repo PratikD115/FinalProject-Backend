@@ -141,11 +141,25 @@ export class UserService {
     }
   }
 
-  async addIdToPlaylist(userId: string, playlistId: string) {
+  async addPlaylistIdToUser(userId: string, playlistId: string) {
     try {
       const user = await this.UserModel.findOneAndUpdate(
         { _id: userId },
         { $addToSet: { playlist: playlistId } },
+        { new: true },
+      );
+
+      if (!user) throw new NotFoundException('User is not exist');
+      return user;
+    } catch {
+      throw new Error('failed to add playlistId in user ');
+    }
+  }
+  async removePlaylistIdToUser(userId: string, playlistId: string) {
+    try {
+      const user = await this.UserModel.findOneAndUpdate(
+        { _id: userId },
+        { $pull: { playlist: playlistId } },
         { new: true },
       );
 
