@@ -3,6 +3,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Genres } from 'src/song/song-genre.enum';
 import { Language } from 'src/song/song-language.enum';
 import { Song } from 'src/song/song.schema';
+import { UserType } from 'src/user/user.type';
 
 @Schema()
 export class Artist extends Document {
@@ -23,6 +24,12 @@ export class Artist extends Document {
 
   @Prop({ type: String, enum: Language, default: Language.other })
   language: Language;
+
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    default: [],
+  })
+  follower?: UserType[];
 
   @Prop()
   biography: string;

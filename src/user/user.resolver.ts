@@ -87,16 +87,15 @@ export class UserResolver {
     }
   }
 
-  @Mutation(()=> UserType)
+  @Mutation(() => UserType)
   async storeImageLink(
-    @Args('imageLink') imageLink : string ,
-    @Args('userId') userId : string ,
-  ){
-   
-    try{
-      const user = await this.userService.updateUserImage(userId , imageLink);
+    @Args('imageLink') imageLink: string,
+    @Args('userId') userId: string,
+  ) {
+    try {
+      const user = await this.userService.updateUserImage(userId, imageLink);
       return user;
-    }catch{
+    } catch {
       throw new Error('error to store the image ');
     }
   }
@@ -106,16 +105,20 @@ export class UserResolver {
     @Args('userId') userId: string,
     @Args('artistId') artistId: string,
   ) {
+    console.log('adding artist to user');
+    //add the userId to artist document
+    await this.artistService.addUserIdToFollower(userId, artistId);
+
+    //add artistid in the user document
     return await this.userService.addArtistToUser(userId, artistId);
   }
-
-
 
   @Mutation(() => UserType)
   async removeArtistToUser(
     @Args('userId') userId: string,
     @Args('artistId') artistId: string,
   ) {
+    await this.artistService.removeUserIdToFollower(userId, artistId);
     return await this.userService.removeArtistToUser(userId, artistId);
   }
 
@@ -125,7 +128,7 @@ export class UserResolver {
   ) {
     try {
       this.songService.likeIncrement(addSongToFavourite.songId);
-      return this.userService.addToFavourite(addSongToFavourite);     
+      return this.userService.addToFavourite(addSongToFavourite);
     } catch (error) {
       throw new Error('failed to add the song in the favourite');
     }
