@@ -10,81 +10,117 @@ export class ArtistService {
   ) {}
 
   async createArtist(artistData, artistImage) {
-    const { name, dateOfBirth, biography, genres, language } = artistData;
+    try {
+      const { name, dateOfBirth, biography, genres, language } = artistData;
 
-    const artist = await this.ArtistModel.create({
-      name,
-      dateOfBirth,
-      biography,
-      genres,
-      language,
-      isActive: true,
-      imageLink: artistImage,
-    });
-    return artist;
+      const artist = await this.ArtistModel.create({
+        name,
+        dateOfBirth,
+        biography,
+        genres,
+        language,
+        isActive: true,
+        imageLink: artistImage,
+      });
+      return artist;
+    } catch {
+      throw new Error('failed to Create Artist');
+    }
   }
 
   async userToArtist(artistData) {
-    const { name, dateOfBirth, biography, genres, language, imageLink } =
-      artistData;
-    return await this.ArtistModel.create({
-      name,
-      dateOfBirth,
-      biography,
-      genres,
-      language,
-      isActive: true,
-      imageLink,
-    });
+    try {
+      const { name, dateOfBirth, biography, genres, language, imageLink } =
+        artistData;
+      return await this.ArtistModel.create({
+        name,
+        dateOfBirth,
+        biography,
+        genres,
+        language,
+        isActive: true,
+        imageLink,
+      });
+    } catch {
+      throw new Error('failed to create the Artist as User');
+    }
   }
 
-  async getArtistById(id): Promise<Artist> {
-    const artist = await this.ArtistModel.findById(id);
-    return artist;
+  async getArtistById(artistId): Promise<Artist> {
+    try {
+      return await this.ArtistModel.findById(artistId);
+    } catch {
+      throw new Error('failed to fetch the artist');
+    }
   }
 
   async getAllActiveArtist() {
-    const artists = await this.ArtistModel.find({ isActive: true });
-    return artists;
+    try {
+      return await this.ArtistModel.find({ isActive: true });
+    } catch {
+      throw new Error('failed to fetch the active artist');
+    }
   }
 
   async addSongIdToArtist(artistId, songId: string): Promise<void> {
-    await this.ArtistModel.findByIdAndUpdate(artistId, {
-      $addToSet: { songs: songId },
-    });
+    try {
+      await this.ArtistModel.findByIdAndUpdate(artistId, {
+        $addToSet: { songs: songId },
+      });
+    } catch {
+      throw new Error('failed to add the song in the artist ');
+    }
   }
 
   async getArtistsByIds(artistIds) {
-    const artists: Artist[] = await Promise.all(
-      artistIds.map(async (artistId: string) => {
-        const artist: Artist = await this.getArtistById(artistId);
-        return artist;
-      }),
-    );
-    return artists;
+    try {
+      await Promise.all(
+        artistIds.map(async (artistId: string) => {
+          const artist: Artist = await this.getArtistById(artistId);
+          return artist;
+        }),
+      );
+    } catch {
+      throw new Error('failed to fetch the artists');
+    }
   }
 
   async softDeleteArtist(artistId) {
-    return await this.ArtistModel.findByIdAndUpdate(artistId, {
-      isActive: false,
-    });
+    try {
+      return await this.ArtistModel.findByIdAndUpdate(artistId, {
+        isActive: false,
+      });
+    } catch {
+      throw new Error('failed to soft delete artist');
+    }
   }
 
   async recoverArtist(artistId) {
-    return await this.ArtistModel.findByIdAndUpdate(artistId, {
-      isActive: true,
-    });
+    try {
+      return await this.ArtistModel.findByIdAndUpdate(artistId, {
+        isActive: true,
+      });
+    } catch {
+      throw new Error('failed to recover the artist');
+    }
   }
 
   async removeSongIdFromArtist(artistId, songId) {
-    await this.ArtistModel.findByIdAndUpdate(artistId, {
-      $pull: { songs: songId },
-    });
+    try {
+      await this.ArtistModel.findByIdAndUpdate(artistId, {
+        $pull: { songs: songId },
+      });
+    } catch {
+      throw new Error('failed to remove the songid from artist');
+    }
   }
 
   async searchArtist(search: string): Promise<Artist[]> {
-    const regex = new RegExp(search, 'i');
-    const artists = await this.ArtistModel.find({ name: regex }).exec();
-    return artists;
+    try {
+      const regex = new RegExp(search, 'i');
+      return await this.ArtistModel.find({ name: regex }).exec();
+    } catch {
+      throw new Error('failed to search artist');
+    }
   }
 }

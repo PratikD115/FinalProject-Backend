@@ -17,6 +17,7 @@ import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UserService } from 'src/user/user.service';
 import { Song } from 'src/song/song.schema';
+import { NotFoundException } from '@nestjs/common';
 
 @Resolver(() => ArtistType)
 export class ArtistResolver {
@@ -28,8 +29,9 @@ export class ArtistResolver {
   ) {}
 
   @Query(() => ArtistType)
-  async getArtistById(@Args('id') id: string) {
-    return await this.artistService.getArtistById(id);
+  async getArtistById(@Args('id') artistId: string) {
+    if (!artistId) throw new NotFoundException('please enter the artistId');
+    return await this.artistService.getArtistById(artistId);
   }
 
   @Query(() => [ArtistType])
@@ -42,15 +44,14 @@ export class ArtistResolver {
     @Args('createArtistDto') createArtistDto: CreateArtistDto,
     @Args('image', { type: () => GraphQLUpload }) image: FileUpload,
   ) {
-    let artist;
-    try {
-      const artistImage = await this.cloudinaryService.uploadImage(
-        image,
-        'artist-image',
-      );
-      artist = this.artistService.createArtist(createArtistDto, artistImage);
-    } catch (err) {}
-    return artist;
+    if (!image) {
+      throw new NotFoundException('please select the image');
+    }
+    const artistImage = await this.cloudinaryService.uploadImage(
+      image,
+      'artist-image',
+    );
+    return await this.artistService.createArtist(createArtistDto, artistImage);
   }
 
   @Mutation(() => ArtistType)
@@ -65,6 +66,7 @@ export class ArtistResolver {
 
   @Mutation(() => ArtistType)
   async deleteArtist(@Args('id') artistId: string): Promise<Artist> {
+    if (!artistId) throw new NotFoundException('please enter the artistId');
     const deletedArtist = await this.artistService.softDeleteArtist(artistId);
     await this.songService.softDeleteSongsByIds(deletedArtist.songs);
     return deletedArtist;
@@ -72,6 +74,7 @@ export class ArtistResolver {
 
   @Mutation(() => ArtistType)
   async recoverArtist(@Args('id') artistId: string): Promise<Artist> {
+    if (!artistId) throw new NotFoundException('please enter the artistId');
     const recoveredArtist = await this.artistService.recoverArtist(artistId);
     await this.songService.recoverSongsByIds(recoveredArtist.songs);
     return recoveredArtist;
@@ -87,7 +90,6 @@ export class ArtistResolver {
     const endIndex = page * limit;
 
     const songs = this.songService.findSongByArtistId(artist.id);
-    const paginatedSongs = (await songs).slice(startIndex, endIndex);
-    return paginatedSongs;
+    return (await songs).slice(startIndex, endIndex);
   }
 }
