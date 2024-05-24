@@ -19,7 +19,7 @@ export class PlaylistService {
       user: userId,
       songs: songId,
     });
-   
+
     return await newPlaylist.save();
   }
 
@@ -41,16 +41,23 @@ export class PlaylistService {
   }
 
   async getPlaylistById(playlistId) {
-    return await this.PlaylistModel.findById(playlistId);
+    try {
+      return await this.PlaylistModel.findById(playlistId);
+    } catch {
+      throw new Error('failed to fetch the playlist');
+    }
   }
 
   async getPlaylistByIds(playlistIds) {
-    const playlists: Playlist[] = await Promise.all(
-      playlistIds.map(async (playlistId: string) => {
-        const Playlist: Playlist = await this.getPlaylistById(playlistId);
-        return Playlist;
-      }),
-    );
-    return playlists;
+    try {
+      return await Promise.all(
+        playlistIds.map(async (playlistId: string) => {
+          const Playlist: Playlist = await this.getPlaylistById(playlistId);
+          return Playlist;
+        }),
+      );
+    } catch {
+      throw new Error('failed to fetch the Playlists');
+    }
   }
 }

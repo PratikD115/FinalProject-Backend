@@ -28,10 +28,7 @@ export class PlaylistResolver {
     @Args('userId') userId: string,
   ) {
     const user = await this.userService.getUserById(userId);
-    if (!user) {
-      throw new NotFoundException('user is not exist');
-    }
-    
+    if (!user) throw new NotFoundException('user is not exist');
     const playlist = await this.playlistService.createPlaylistAndAddSong(
       songId,
       userId,
@@ -44,14 +41,13 @@ export class PlaylistResolver {
   @Mutation(() => PlaylistType)
   async addSongToPlaylist(
     @Args('playlistId') playlistId: string,
-    @Args('songId') songId : string
+    @Args('songId') songId: string,
   ) {
-    return await this.playlistService.addSongToPlaylist(playlistId, songId);
-    }
+    
 
-  
-  
-  
+    return await this.playlistService.addSongToPlaylist(playlistId, songId);
+  }
+
   @ResolveField(() => [SongType])
   async songs(@Parent() playlist: Playlist) {
     return await this.songService.getSongsByIds(playlist.songs);
