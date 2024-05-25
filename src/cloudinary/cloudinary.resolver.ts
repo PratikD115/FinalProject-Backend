@@ -29,8 +29,8 @@ export class CloudinaryResolver {
       await this.cloudinaryService.deleteImageByUrl(imageUrl);
       return true; // Image deleted successfully
     } catch (error) {
-      console.error(`Failed to delete image: ${error.message}`);
-      return false; // Image deletion failed
+     
+      return false;
     }
   }
 }

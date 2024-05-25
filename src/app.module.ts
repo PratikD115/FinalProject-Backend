@@ -1,9 +1,8 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config'; // Import ConfigService for factory function
-import { graphqlUploadExpress } from 'graphql-upload';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ArtistModule } from './artist/artist.module';
@@ -46,10 +45,4 @@ import { SubscriptionModule } from './subscription/subscription.module';
     SubscriptionModule,
   ],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(graphqlUploadExpress()) // Apply GraphQL file upload middleware
-      .forRoutes({ path: '/graphql', method: RequestMethod.POST }); // Only for POST requests to /graphql
-  }
-}
+export class AppModule {}
