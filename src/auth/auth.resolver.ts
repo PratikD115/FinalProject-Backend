@@ -30,4 +30,18 @@ export class AuthResolver {
   ): Promise<{ token: string }> {
     return await this.authService.login(loginUserDto);
   }
+
+  @Mutation(() => UserType)
+  async changePassword(
+    @Args('userId') userId: string,
+    @Args('password') password: string,
+    @Args('confirmPassword') confirmPassword: string,
+  ) {
+    if (password !== confirmPassword) {
+      throw new BadRequestException(
+        'password and confirmPassword must be same',
+      );
+    }
+    return await this.authService.updatePassword(userId, password);
+  }
 }

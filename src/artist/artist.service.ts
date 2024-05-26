@@ -9,7 +9,7 @@ export class ArtistService {
     @InjectModel(Artist.name) public readonly ArtistModel: Model<Artist>,
   ) {}
 
-  async createArtist(artistData, artistImage) {
+  async createArtist(artistData, artistImage): Promise<Artist> {
     try {
       const { name, dateOfBirth, biography, genres, language } = artistData;
 
@@ -28,7 +28,7 @@ export class ArtistService {
     }
   }
 
-  async userToArtist(artistData) {
+  async userToArtist(artistData): Promise<Artist> {
     try {
       const { name, dateOfBirth, biography, genres, language, imageLink } =
         artistData;
@@ -54,7 +54,7 @@ export class ArtistService {
     }
   }
 
-  async getAllActiveArtist() {
+  async getAllActiveArtist(): Promise<Artist[]> {
     try {
       return await this.ArtistModel.find({ isActive: true });
     } catch {
@@ -72,7 +72,7 @@ export class ArtistService {
     }
   }
 
-  async getArtistsByIds(artistIds) {
+  async getArtistsByIds(artistIds): Promise<Artist[]> {
     try {
       return await Promise.all(
         artistIds.map(async (artistId: string) => {
@@ -85,7 +85,7 @@ export class ArtistService {
     }
   }
 
-  async softDeleteArtist(artistId) {
+  async softDeleteArtist(artistId): Promise<Artist> {
     try {
       return await this.ArtistModel.findByIdAndUpdate(artistId, {
         isActive: false,
@@ -95,7 +95,7 @@ export class ArtistService {
     }
   }
 
-  async recoverArtist(artistId) {
+  async recoverArtist(artistId): Promise<Artist> {
     try {
       return await this.ArtistModel.findByIdAndUpdate(artistId, {
         isActive: true,
@@ -105,7 +105,7 @@ export class ArtistService {
     }
   }
 
-  async removeSongIdFromArtist(artistId, songId) {
+  async removeSongIdFromArtist(artistId, songId): Promise<void> {
     try {
       await this.ArtistModel.findByIdAndUpdate(artistId, {
         $pull: { songs: songId },
@@ -115,7 +115,7 @@ export class ArtistService {
     }
   }
 
-  async addUserIdToFollower(userId, artistId) {
+  async addUserIdToFollower(userId, artistId): Promise<void> {
     try {
       await this.ArtistModel.findByIdAndUpdate(artistId, {
         $addToSet: { follower: userId },
@@ -125,7 +125,7 @@ export class ArtistService {
     }
   }
 
-  async removeUserIdToFollower(userId, artistId) {
+  async removeUserIdToFollower(userId, artistId): Promise<void> {
     try {
       await this.ArtistModel.findByIdAndUpdate(artistId, {
         $pull: { follower: userId },

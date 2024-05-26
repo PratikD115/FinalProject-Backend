@@ -53,7 +53,7 @@ export class AuthService {
         await this.subscriptionService.getSubscriptionById(subscribe);
       let asArtist;
       if (artistId) {
-        asArtist = artistId.toString();  //convert objectiId to string 
+        asArtist = artistId.toString(); //convert objectiId to string
       }
       return {
         token,
@@ -67,6 +67,17 @@ export class AuthService {
       };
     } catch {
       throw new Error('failed to logIn the user');
+    }
+  }
+
+  async updatePassword(userId: string, password: string) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      return await this.userService.UserModel.findByIdAndUpdate(userId, {
+        password: hashedPassword,
+      });
+    } catch {
+      throw new Error('failed to update the password');
     }
   }
 }

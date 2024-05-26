@@ -29,13 +29,13 @@ export class ArtistResolver {
   ) {}
 
   @Query(() => ArtistType)
-  async getArtistById(@Args('id') artistId: string) {
+  async getArtistById(@Args('id') artistId: string): Promise<Artist> {
     if (!artistId) throw new NotFoundException('please enter the artistId');
     return await this.artistService.getArtistById(artistId);
   }
 
   @Query(() => [ArtistType])
-  async getAllActiveArtist() {
+  async getAllActiveArtist(): Promise<Artist[]> {
     return await this.artistService.getAllActiveArtist();
   }
 
@@ -43,7 +43,7 @@ export class ArtistResolver {
   async createArtist(
     @Args('createArtistDto') createArtistDto: CreateArtistDto,
     @Args('image', { type: () => GraphQLUpload }) image: FileUpload,
-  ) {
+  ): Promise<Artist> {
     if (!image) {
       throw new NotFoundException('please select the image');
     }
@@ -57,7 +57,7 @@ export class ArtistResolver {
   @Mutation(() => ArtistType)
   async createUserToArtist(
     @Args('createUserToArtist') createUserToArtistDto: CreateUserToArtistDto,
-  ) {
+  ): Promise<Artist> {
     const { userId, ...artistData } = createUserToArtistDto;
     const artist = await this.artistService.userToArtist(artistData);
     await this.userService.addAsArtist(userId, artist.id);
@@ -88,7 +88,6 @@ export class ArtistResolver {
   ): Promise<Song[]> {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-
     const songs = this.songService.findSongByArtistId(artist.id);
     return (await songs).slice(startIndex, endIndex);
   }
