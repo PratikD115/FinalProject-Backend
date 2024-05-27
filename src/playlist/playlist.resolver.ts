@@ -13,6 +13,8 @@ import { SongService } from 'src/song/song.service';
 import { NotFoundException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { UserType } from 'src/user/user.type';
+import { Song } from 'src/song/song.schema';
+import { User } from 'src/user/user.schema';
 
 @Resolver(() => PlaylistType)
 export class PlaylistResolver {
@@ -27,7 +29,7 @@ export class PlaylistResolver {
     @Args('songId') songId: string,
     @Args('playlistName') playlistName: string,
     @Args('userId') userId: string,
-  ) {
+  ): Promise<Playlist> {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new NotFoundException('user is not exist');
     const playlist = await this.playlistService.createPlaylistAndAddSong(
@@ -40,7 +42,9 @@ export class PlaylistResolver {
   }
 
   @Mutation(() => PlaylistType)
-  async deletePlaylist(@Args('playlistId') playlistId: string) {
+  async deletePlaylist(
+    @Args('playlistId') playlistId: string,
+  ): Promise<Playlist> {
     const playlist = await this.playlistService.deletePlaylist(playlistId);
     this.userService.removePlaylistIdToUser(
       playlist.user.toString(),
@@ -53,17 +57,17 @@ export class PlaylistResolver {
   async addSongToPlaylist(
     @Args('playlistId') playlistId: string,
     @Args('songId') songId: string,
-  ) {
+  ): Promise<Playlist> {
     return await this.playlistService.addSongToPlaylist(playlistId, songId);
   }
 
   @ResolveField(() => [SongType])
-  async songs(@Parent() playlist: Playlist) {
+  async songs(@Parent() playlist: Playlist): Promise<Song[]> {
     return await this.songService.getSongsByIds(playlist.songs);
   }
 
   @ResolveField(() => UserType)
-  async user(@Parent() playlist: Playlist) {
+  async user(@Parent() playlist: Playlist): Promise<User> {
     return await this.userService.getUserById(playlist.user);
   }
 }

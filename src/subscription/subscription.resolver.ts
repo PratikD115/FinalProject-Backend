@@ -11,6 +11,7 @@ import { SubscriptionService } from './subscription.service';
 import { UserType } from 'src/user/user.type';
 import { Subscription } from './subscription.schema';
 import { SubscriptionType } from './subscription.type';
+import { User } from 'src/user/user.schema';
 
 @Resolver(() => SubscriptionType)
 export class SubscriptionResolver {
@@ -23,17 +24,14 @@ export class SubscriptionResolver {
   async createSubscription(
     @Args('price') price: number,
     @Args('userId') userId: string,
-  ) {
+  ): Promise<string> {
     const user = await this.userService.getUserById(userId);
 
     // Call the Stripe service to create a subscription
     const { sessionURL, subscriptionId } =
       await this.subscriptionService.myPaymentServiceStart(user, price);
 
-    await this.userService.addSubscription(
-      userId,
-      subscriptionId,
-    );
+    await this.userService.addSubscription(userId, subscriptionId);
     return sessionURL;
   }
   @Mutation(() => Boolean)
@@ -42,7 +40,7 @@ export class SubscriptionResolver {
   }
 
   @ResolveField(() => UserType)
-  async userId(@Parent() subscription: Subscription) {
+  async userId(@Parent() subscription: Subscription): Promise<User> {
     return await this.userService.getUserById(subscription.userId);
   }
 }

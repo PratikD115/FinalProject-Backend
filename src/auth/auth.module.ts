@@ -29,4 +29,6 @@ import { ArtistModule } from 'src/artist/artist.module';
   providers: [JwtAuthGuard, AuthResolver, AuthService],
   exports : [AuthService]
 })
-export class AuthModule {}
+export class AuthModule {
+  
+}

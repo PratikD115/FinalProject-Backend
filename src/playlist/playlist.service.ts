@@ -40,7 +40,7 @@ export class PlaylistService {
     return playlist;
   }
 
-  async getPlaylistById(playlistId) {
+  async getPlaylistById(playlistId): Promise<Playlist> {
     try {
       return await this.PlaylistModel.findById(playlistId);
     } catch {
@@ -48,15 +48,14 @@ export class PlaylistService {
     }
   }
 
-  async deletePlaylist(playlistId: string) {
-    console.log('enter in to delete the palylist');
+  async deletePlaylist(playlistId: string): Promise<Playlist> {
     try {
       return await this.PlaylistModel.findByIdAndDelete(playlistId);
     } catch {
       throw new Error('failed to delete the playlist');
     }
   }
-  async getPlaylistByIds(playlistIds) {
+  async getPlaylistByIds(playlistIds): Promise<Playlist[]> {
     try {
       return await Promise.all(
         playlistIds.map(async (playlistId: string) => {

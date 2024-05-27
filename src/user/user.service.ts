@@ -28,19 +28,17 @@ export class UserService {
     }
   }
 
-  async addToFavourite({ userId, songId }) {
+  async addToFavourite({ userId, songId }): Promise<User> {
     try {
-      const user = await this.UserModel.findByIdAndUpdate(userId, {
+      return await this.UserModel.findByIdAndUpdate(userId, {
         $addToSet: { favourite: songId },
       });
-
-      return user;
     } catch (error) {
       throw new Error('failed to add song to Favourite');
     }
   }
 
-  async removeToFavourite({ userId, songId }) {
+  async removeToFavourite({ userId, songId }): Promise<User> {
     try {
       const user = await this.UserModel.findByIdAndUpdate(userId, {
         $pull: { favourite: songId },
@@ -55,7 +53,7 @@ export class UserService {
     }
   }
 
-  async addSubscription(userId: string, subscriptionId: string) {
+  async addSubscription(userId: string, subscriptionId: string): Promise<void> {
     try {
       const user = await this.UserModel.findByIdAndUpdate(
         userId,
@@ -70,7 +68,7 @@ export class UserService {
     }
   }
 
-  async addAsArtist(userId: string, artistId: string) {
+  async addAsArtist(userId: string, artistId: string): Promise<void> {
     try {
       const user = await this.UserModel.findByIdAndUpdate(
         userId,
@@ -82,7 +80,7 @@ export class UserService {
       throw new Error('failed to add artistId to user');
     }
   }
-  async addArtistToUser(userId: string, artistId: string) {
+  async addArtistToUser(userId: string, artistId: string): Promise<User> {
     const user = await this.UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { follow: artistId } },
@@ -94,7 +92,7 @@ export class UserService {
     }
     return user;
   }
-  async removeArtistToUser(userId: string, artistId: string) {
+  async removeArtistToUser(userId: string, artistId: string): Promise<User> {
     try {
       const user = await this.UserModel.findByIdAndUpdate(
         userId,
@@ -111,7 +109,7 @@ export class UserService {
     }
   }
 
-  async getUserById(userId) {
+  async getUserById(userId): Promise<User> {
     try {
       const user = await this.UserModel.findById(userId);
       if (!user) {
@@ -123,7 +121,7 @@ export class UserService {
     }
   }
 
-  async updateUserImage(userId: string, imageLink: string) {
+  async updateUserImage(userId: string, imageLink: string): Promise<User> {
     try {
       const updatedUser = await this.UserModel.findByIdAndUpdate(
         userId,
@@ -141,7 +139,7 @@ export class UserService {
     }
   }
 
-  async addPlaylistIdToUser(userId: string, playlistId: string) {
+  async addPlaylistIdToUser(userId: string, playlistId: string): Promise<User> {
     try {
       const user = await this.UserModel.findOneAndUpdate(
         { _id: userId },
@@ -155,7 +153,10 @@ export class UserService {
       throw new Error('failed to add playlistId in user ');
     }
   }
-  async removePlaylistIdToUser(userId: string, playlistId: string) {
+  async removePlaylistIdToUser(
+    userId: string,
+    playlistId: string,
+  ): Promise<User> {
     try {
       const user = await this.UserModel.findOneAndUpdate(
         { _id: userId },

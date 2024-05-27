@@ -43,7 +43,7 @@ export class SongService {
     );
   }
 
-  async getMostLikedSong() {
+  async getMostLikedSong(): Promise<Song[]> {
     try {
       return await this.songModel.find().sort({ likes: -1 }).limit(7);
     } catch {
@@ -60,7 +60,7 @@ export class SongService {
     }
   }
 
-  async getSongById(songId) {
+  async getSongById(songId): Promise<Song> {
     try {
       const song = await this.songModel.findOne({
         _id: songId,
@@ -83,7 +83,7 @@ export class SongService {
     }
   }
 
-  async softDeleteSong(songId: string) {
+  async softDeleteSong(songId: string): Promise<Song> {
     try {
       await this.songModel.findByIdAndUpdate(songId, { isActive: false });
       return await this.songModel.findById(songId);
@@ -92,7 +92,7 @@ export class SongService {
     }
   }
 
-  async recoverSong(songId: string) {
+  async recoverSong(songId: string): Promise<Song> {
     try {
       await this.songModel.findByIdAndUpdate(songId, { isActive: true });
       return await this.songModel.findById(songId);
@@ -101,7 +101,7 @@ export class SongService {
     }
   }
 
-  async getAllActiveSongs(page: number, limit: number) {
+  async getAllActiveSongs(page: number, limit: number): Promise<Song[]> {
     const offset = (page - 1) * limit;
     try {
       return await this.songModel
@@ -135,7 +135,7 @@ export class SongService {
     }
   }
 
-  async getSongsByIds(songIds) {
+  async getSongsByIds(songIds): Promise<Song[]> {
     try {
       return await Promise.all(
         songIds.map(async (songId: string) => {

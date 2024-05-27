@@ -5,7 +5,9 @@ import { AuthResponse } from './auth.type';
 import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginUserDto } from 'src/user/dto/login_user.dto';
 import { UserService } from 'src/user/user.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
+import { User } from 'src/user/user.schema';
+import { JwtAuthGuard } from './auth.guard';
 
 @Resolver(() => UserType)
 export class AuthResolver {
@@ -15,7 +17,9 @@ export class AuthResolver {
   ) {}
 
   @Mutation(() => UserType)
-  async signUp(@Args('createUserDto') createUserDto: CreateUserDto) {
+  async signUp(
+    @Args('createUserDto') createUserDto: CreateUserDto,
+  ): Promise<User> {
     const { name, email, password, role } = createUserDto;
     const user = await this.userService.getUserByEmail(email);
     if (user) {
@@ -27,16 +31,17 @@ export class AuthResolver {
   @Mutation(() => AuthResponse)
   async login(
     @Args('loginUserDto') loginUserDto: LoginUserDto,
-  ): Promise<{ token: string }> {
+  ): Promise<AuthResponse> {
     return await this.authService.login(loginUserDto);
   }
 
   @Mutation(() => UserType)
+  @UseGuards(JwtAuthGuard)
   async changePassword(
     @Args('userId') userId: string,
     @Args('password') password: string,
     @Args('confirmPassword') confirmPassword: string,
-  ) {
+  ): Promise<User> {
     if (password !== confirmPassword) {
       throw new BadRequestException(
         'password and confirmPassword must be same',

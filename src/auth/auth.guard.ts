@@ -9,7 +9,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class JwtAuthGuard  implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -31,7 +31,6 @@ export class JwtAuthGuard implements CanActivate {
       });
 
       req.user = payload;
-    
     } catch {
       throw new UnauthorizedException('Invalid token');
     }

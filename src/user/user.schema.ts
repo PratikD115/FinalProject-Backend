@@ -29,7 +29,7 @@ export class User extends Document {
     default: [],
   })
   follow?: ArtistType[];
-  
+
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }],
     default: [],
@@ -55,8 +55,6 @@ export class User extends Document {
     default: null,
   })
   subscribe?: SubscriptionType;
-  
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
-

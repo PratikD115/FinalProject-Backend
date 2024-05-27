@@ -5,11 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Song, songSchema } from './song.schema';
 import { ArtistModule } from 'src/artist/artist.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { JwtModule } from '@nestjs/jwt';
  
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Song.name, schema: songSchema }]),
-     ArtistModule,
+    ArtistModule,
+    JwtModule,
     CloudinaryModule,
   ],
   providers: [SongResolver, SongService],

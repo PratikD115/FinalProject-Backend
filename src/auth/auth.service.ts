@@ -8,6 +8,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthResponse } from './auth.type';
 import { SubscriptionService } from 'src/subscription/subscription.service';
+import { User } from 'src/user/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
     private subscriptionService: SubscriptionService,
   ) {}
 
-  async createNewUser(name, email, password, role) {
+  async createNewUser(name, email, password, role): Promise<User> {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       const profile =
@@ -70,7 +71,7 @@ export class AuthService {
     }
   }
 
-  async updatePassword(userId: string, password: string) {
+  async updatePassword(userId: string, password: string): Promise<User> {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       return await this.userService.UserModel.findByIdAndUpdate(userId, {

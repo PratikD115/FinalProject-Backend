@@ -16,6 +16,7 @@ import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import fetch from 'node-fetch';
 import { CreateSongLinkDto } from './dto/createSongLink.dto';
+import { Artist } from 'src/artist/artist.schema';
 
 @Resolver(() => SongType)
 export class SongResolver {
@@ -26,7 +27,7 @@ export class SongResolver {
   ) {}
 
   @Query(() => SongType)
-  async SongById(@Args('id') songId: string) {
+  async SongById(@Args('id') songId: string): Promise<Song> {
     return this.songService.getSongById(songId);
   }
 
@@ -34,30 +35,26 @@ export class SongResolver {
   async getAllActiveSongs(
     @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
     @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
-  ) {
+  ): Promise<Song[]> {
     const song = await this.songService.getAllActiveSongs(page, limit);
     return song;
   }
 
   @Query(() => [SongType])
   async songsByLanguage(@Args('language') language: string): Promise<Song[]> {
-    
-   
     return this.songService.findByLanguage(language);
   }
 
   @Query(() => [SongType])
-  async mostLikedSong() {
-   
+  async mostLikedSong(): Promise<Song[]> {
     return await this.songService.getMostLikedSong();
   }
 
   @Mutation(() => String)
-  async downloadSong(@Args('url') url: string) {
+  async downloadSong(@Args('url') url: string): Promise<string> {
     const response = await fetch(url);
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer).toString('base64');
-    
   }
 
   @Mutation(() => SongType)
@@ -67,7 +64,7 @@ export class SongResolver {
     audio: FileUpload,
     @Args('image', { type: () => GraphQLUpload })
     image: FileUpload,
-  ) {
+  ): Promise<Song> {
     const streamingLink = await this.cloudinaryService.uploadAudio(
       audio,
       'song-audio',
@@ -89,8 +86,7 @@ export class SongResolver {
   @Mutation(() => SongType)
   async createSongLink(
     @Args('createSongLinkDto') createSongLinkDto: CreateSongLinkDto,
-  ) {
-   
+  ): Promise<Song> {
     const { imageLink, streamingLink, ...details } = createSongLinkDto;
     const savedSong = await this.songService.createSong(
       details,
@@ -103,18 +99,16 @@ export class SongResolver {
   }
 
   @Mutation(() => SongType)
-  async deleteSong(@Args('id') songId: string) {
-    const deletedSong = await this.songService.softDeleteSong(songId);
-    return deletedSong;
+  async deleteSong(@Args('id') songId: string): Promise<Song> {
+    return await this.songService.softDeleteSong(songId);
   }
   @Mutation(() => SongType)
-  async recoverSong(@Args('id') songId: string) {
-    const song = await this.songService.recoverSong(songId);
-    return song;
+  async recoverSong(@Args('id') songId: string): Promise<Song> {
+    return await this.songService.recoverSong(songId);
   }
 
   @ResolveField()
-  async artist(@Parent() song: Song) {
+  async artist(@Parent() song: Song): Promise<Artist> {
     return this.artistService.getArtistById(song.artist);
   }
 }
